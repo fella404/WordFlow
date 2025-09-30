@@ -1,0 +1,43 @@
+import mongoose from "mongoose";
+
+const storySchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    excerpt: { type: String, maxLength: 200, required: true },
+    thumbnail: { type: String, required: true },
+    copyright: {
+      type: String,
+      enum: ["original", "adapted", "public_domain", "ai generated"],
+      default: "original",
+    },
+    source: {
+      type: String,
+      required: true,
+    },
+    author: {
+      type: String,
+      required: true,
+    },
+    vocabs: [
+      {
+        word: { type: String, required: true },
+        meaning: { type: String, required: true },
+        example: [String],
+      },
+    ],
+    level: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      default: "Beginner",
+    },
+    status: {
+      type: String,
+      enum: ["draft", "published"],
+      default: "draft",
+    },
+  },
+  { timestamps: true }
+);
+
+export default mongoose.model("Story", storySchema);
