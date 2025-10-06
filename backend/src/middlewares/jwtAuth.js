@@ -8,13 +8,13 @@ function jwtAuth() {
     try {
       const { authorization } = req.headers;
       if (!authorization) {
-        throw { code: 428, message: "No token provided" };
+        throw { code: 428, message: "No access token provided" };
       }
 
       const token = authorization.split(" ")[1];
       const verified = jsonwebtoken.verify(
         token,
-        process.env.JWT_REFRESH_TOKEN_SECRET
+        process.env.JWT_ACCESS_TOKEN_SECRET
       );
       req.jwt = verified;
       next();
@@ -29,7 +29,7 @@ function jwtAuth() {
       if (error.message === "jwt expired")
         error.message = "Access token expired, please login again";
       else if (errorMessages.includes(error.message))
-        err.message = "Invalid access token";
+        error.message = "Invalid access token";
 
       return res.status(error.code || 500).json({
         message: error.message || "Internal server error",
