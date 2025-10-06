@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import AuthController from "../controllers/AuthController.js";
+import StoryController from "../controllers/StoryController.js";
 import jwtAuth from "../middlewares/jwtAuth.js";
 
 const router = Router();
@@ -9,5 +10,8 @@ const router = Router();
 router.post("/register", AuthController.register);
 router.post("/login", AuthController.login);
 router.post("/refresh-token", jwtAuth(), AuthController.refreshToken);
+
+// Story routes
+router.post("/stories", jwtAuth(), StoryController.create);
 
 export default router;
