@@ -34,7 +34,16 @@ class StoryController {
   }
 
   async update(req, res) {
-    
+    try {
+      const { id } = req.params;
+      const story = await Story.findByIdAndUpdate(id, req.body, { new: true });
+      if (!story) throw { code: 404, message: "Story not found" };
+      return res.status(200).json(story);
+    } catch (error) {
+      return res.status(error.code || 500).json({
+        message: error.message || "Internal server error",
+      });
+    }
   }
 }
 
