@@ -16,5 +16,6 @@ router.get("/stories", jwtAuth(), StoryController.index);
 router.post("/stories", jwtAuth(), StoryController.create);
 router.get("/stories/:id", jwtAuth(), StoryController.getStoryById);
 router.put("/stories/:id", jwtAuth(), StoryController.update);
+router.delete("/stories/:id", jwtAuth(), StoryController.delete);
 
 export default router;

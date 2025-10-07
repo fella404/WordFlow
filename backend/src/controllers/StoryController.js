@@ -45,6 +45,19 @@ class StoryController {
       });
     }
   }
+
+  async delete(req, res) {
+    try {
+      const { id } = req.params;
+      const story = await Story.findByIdAndDelete(id);
+      if (!story) throw { code: 404, message: "Story not found" };
+      return res.sendStatus(200);
+    } catch (error) {
+      return res.status(error.code || 500).json({
+        message: error.message || "Internal server error",
+      });
+    }
+  }
 }
 
 export default new StoryController();
