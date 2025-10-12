@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 const storySchema = new mongoose.Schema(
   {
@@ -38,4 +39,5 @@ const storySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+storySchema.plugin(paginate);
 export default mongoose.model("Story", storySchema);
