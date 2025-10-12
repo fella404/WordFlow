@@ -12,7 +12,7 @@ router.post("/login", AuthController.login);
 router.post("/refresh-token", jwtAuth(), AuthController.refreshToken);
 
 // Story routes
-router.get("/stories", jwtAuth(), StoryController.index);
+router.get("/stories", jwtAuth(), StoryController.getAllStories);
 router.post("/stories", jwtAuth(), StoryController.create);
 router.get("/stories/:id", jwtAuth(), StoryController.getStoryById);
 router.put("/stories/:id", jwtAuth(), StoryController.update);

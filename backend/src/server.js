@@ -2,7 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import router from "./routes/routes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import publicRoutes from "./routes/publicRoutes.js";
 import connection from "./config/db.js";
 
 const env = dotenv.config({ quiet: true }).parsed;
@@ -16,7 +17,8 @@ app.use(
 );
 app.use(express.json());
 
-app.use("/api", router);
+app.use("/api/admin", adminRoutes);
+app.use("/api/public", publicRoutes);
 
 connection().then(() => {
   app.listen(env.APP_PORT || 3000, () => {

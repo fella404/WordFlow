@@ -1,15 +1,29 @@
+import mongoose from "mongoose";
 import Story from "../models/Story.js";
 import { paginate } from "mongoose-paginate-v2";
 
 class StoryController {
-  async index(req, res) {
+  async getAllStories(req, res) {
     try {
       const limit = Number(req.query.limit) || 5;
       const page = Number(req.query.page) || 1;
       const story = await Story.paginate({}, { limit, page });
       return res.status(200).json(story);
     } catch (error) {
-      console.log(error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async getPublishedStories(req, res) {
+    try {
+      const limit = Number(req.query.limit) || 5;
+      const page = Number(req.query.page) || 1;
+      const story = await Story.paginate(
+        { status: "published" },
+        { limit, page }
+      );
+      return res.status(200).json(story);
+    } catch (error) {
       return res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -28,6 +42,21 @@ class StoryController {
     try {
       const { id } = req.params;
       const story = await Story.findById(id);
+      if (!story) throw { code: 404, message: "Story not found" };
+      return res.status(200).json(story);
+    } catch (error) {
+      return res
+        .status(error.code || 500)
+        .json({ message: error.message || "Internal server error" });
+    }
+  }
+  async getPublishedStoryById(req, res) {
+    try {
+      const { id } = req.params;
+      const story = await Story.findOne({
+        _id: new mongoose.Types.ObjectId(id),
+        status: "published",
+      });
       if (!story) throw { code: 404, message: "Story not found" };
       return res.status(200).json(story);
     } catch (error) {
