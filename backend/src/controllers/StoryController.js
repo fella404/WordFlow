@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import Story from "../models/Story.js";
-import { paginate } from "mongoose-paginate-v2";
 
 class StoryController {
   async getAllStories(req, res) {
@@ -50,6 +49,7 @@ class StoryController {
         .json({ message: error.message || "Internal server error" });
     }
   }
+  
   async getPublishedStoryById(req, res) {
     try {
       const { id } = req.params;
