@@ -5,7 +5,7 @@ const storySchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     content: { type: String, required: true },
-    excerpt: { type: String, maxLength: 200, required: true },
+    excerpt: { type: String, maxLength: 300, required: true },
     thumbnail: { type: String },
     copyright: {
       type: String,

@@ -49,7 +49,7 @@ class StoryController {
         .json({ message: error.message || "Internal server error" });
     }
   }
-  
+
   async getPublishedStoryById(req, res) {
     try {
       const { id } = req.params;
