@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { RouterLink } from "vue-router";
 import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
 
@@ -41,7 +41,13 @@ fetchStories();
       <h2 class="text-[#195A94] text-xl/8 font-semibold">
         {{ story.title }}
       </h2>
-      <p class="text-[#747474] text-base/6">{{ story.excerpt }}</p>
+      <p class="text-[#747474] text-justify text-base/6">
+        {{
+          story.excerpt.length > 180
+            ? story.excerpt.substring(0, 180) + "..."
+            : story.excerpt
+        }}
+      </p>
       <div class="w-full flex justify-between">
         <div class="flex gap-4 items-center">
           <IoCalendar />

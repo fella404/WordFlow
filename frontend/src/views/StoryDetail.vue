@@ -6,7 +6,6 @@ import { IoStopCircleOutline } from "vue-icons-plus/io";
 
 import api from "../lib/axios.js";
 import Navbar from "../components/Navbar.vue";
-import { computed } from "vue";
 
 const story = ref(null);
 const route = useRoute();
@@ -19,11 +18,6 @@ const fetchStory = async () => {
     console.log("Error fetching notes: ", error);
   }
 };
-
-const paragraphs = computed(() => {
-  if (!story.value?.content) return [];
-  return story.value.content.split("<p class='newline'></p>");
-});
 
 onMounted(() => {
   fetchStory();
@@ -39,18 +33,18 @@ onMounted(() => {
         <span>Copyright: {{ story.copyright }}</span>
         <span>Author: {{ story.author }}</span>
       </div>
-      <p class="text-[#747474]">{{ story.excerpt }}</p>
+      <p class="text-[#747474] text-justify">{{ story.excerpt }}</p>
       <img :src="story.thumbnail" alt="img" class="h-[320px]" />
-      <div class="space-y-5">
-        <p v-for="(paragraph, index) in paragraphs" :key="index">
-          {{ paragraph }}
-        </p>
-      </div>
+      <p class="text-justify">{{ story.content }}</p>
       <div class="flex gap-4 justify-center">
-        <button class="p-2 bg-[#EFEFEF] rounded-full">
+        <button
+          class="p-2 bg-[#EFEFEF] rounded-full shadow-none transition-shadow duration-300 cursor-pointer hover:shadow-lg hover:shadow-gray-400"
+        >
           <AiOutlinePlayCircle />
         </button>
-        <button class="p-2 bg-[#EFEFEF] rounded-full hover:bg-[#f1f1f1]">
+        <button
+          class="p-2 bg-[#EFEFEF] rounded-full shadow-none transition-shadow duration-300 cursor-pointer hover:shadow-lg hover:shadow-gray-400"
+        >
           <IoStopCircleOutline />
         </button>
       </div>
@@ -74,4 +68,3 @@ onMounted(() => {
     </section>
   </main>
 </template>
-
