@@ -6,6 +6,7 @@ import { IoStopCircleOutline } from "vue-icons-plus/io";
 
 import api from "../lib/axios.js";
 import Navbar from "../components/Navbar.vue";
+import { computed } from "vue";
 
 const story = ref(null);
 const route = useRoute();
@@ -18,6 +19,11 @@ const fetchStory = async () => {
     console.log("Error fetching notes: ", error);
   }
 };
+
+const paragraphs = computed(() => {
+  if (!story.value?.content) return [];
+  return story.value.content.split("<p class='newline'></p>");
+});
 
 onMounted(() => {
   fetchStory();
@@ -35,7 +41,11 @@ onMounted(() => {
       </div>
       <p class="text-[#747474]">{{ story.excerpt }}</p>
       <img :src="story.thumbnail" alt="img" class="h-[320px]" />
-      <p class="">{{ story.content }}</p>
+      <div class="space-y-5">
+        <p v-for="(paragraph, index) in paragraphs" :key="index">
+          {{ paragraph }}
+        </p>
+      </div>
       <div class="flex gap-4 justify-center">
         <button class="p-2 bg-[#EFEFEF] rounded-full">
           <AiOutlinePlayCircle />
@@ -64,3 +74,4 @@ onMounted(() => {
     </section>
   </main>
 </template>
+
