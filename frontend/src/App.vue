@@ -3,7 +3,9 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <routerView />
+  <div class="px-8">
+    <routerView />
+  </div>
 </template>
 
 <style scoped></style>
