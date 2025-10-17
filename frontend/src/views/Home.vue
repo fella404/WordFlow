@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
 
@@ -11,6 +11,7 @@ import api from "../lib/axios.js";
 
 const route = useRoute();
 const stories = ref([]);
+const searchInput = ref("");
 
 const fetchStories = async (page) => {
   try {
@@ -24,6 +25,19 @@ const fetchStories = async (page) => {
   }
 };
 
+const getSearch = (val) => (searchInput.value = val);
+
+const renderStories = computed(() => {
+  if (!stories.value || !stories.value.docs) return [];
+
+  const storiesArray = stories.value.docs;
+  const searchTerm = searchInput.value.toLowerCase().trim();
+
+  return storiesArray.filter((story) => {
+    return story.title.toLowerCase().includes(searchTerm);
+  });
+});
+
 watch(
   () => route.query.page,
   (newPageValue) => {
@@ -35,12 +49,12 @@ watch(
 </script>
 
 <template>
-  <Navbar />
+  <Navbar @update:search="getSearch" />
   <main
     class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-between gap-8 pb-8"
   >
     <div
-      v-for="story in stories.docs"
+      v-for="story in renderStories"
       :key="story._id"
       class="flex flex-col gap-4"
     >
