@@ -122,7 +122,7 @@ onMounted(() => {
 <template>
   <Navbar />
   <main v-if="story" class="pb-6">
-    <section class="w-[600px] flex flex-col gap-4 mx-auto px-8">
+    <section class="w-[600px] flex flex-col gap-4 mx-auto px-8 pb-8">
       <h2 class="text-2xl font-semibold">{{ story.title }}</h2>
       <div class="flex gap-4">
         <span>Copyright: {{ story.copyright }}</span>
@@ -142,7 +142,7 @@ onMounted(() => {
           "
           class="p-2 bg-[#EFEFEF] rounded-full shadow-none transition-shadow duration-300 cursor-pointer hover:shadow-lg hover:shadow-gray-400"
         >
-          <AiOutlinePlayCircle v-if="!isPaused" />
+          <AiOutlinePlayCircle v-if="!isSpeaking || isPaused" />
           <AiOutlinePauseCircle v-else />
         </button>
         <button

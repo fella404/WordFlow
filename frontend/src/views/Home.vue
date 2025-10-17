@@ -1,32 +1,43 @@
 <script setup>
-import { ref, computed } from "vue";
-import { RouterLink } from "vue-router";
+import { ref, watch } from "vue";
+import { RouterLink, useRoute } from "vue-router";
 import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
 
 import Navbar from "../components/Navbar.vue";
+import Pagination from "../components/Pagination.vue";
 
 import { formatDate } from "../lib/utils.js";
 import api from "../lib/axios.js";
 
+const route = useRoute();
 const stories = ref([]);
 
-const fetchStories = async () => {
+const fetchStories = async (page) => {
   try {
-    const res = await api.get("/stories");
+    const res = await api.get("/stories", {
+      params: { page },
+    });
     stories.value = res.data;
-    console.log(stories.value.docs);
+    console.log(stories.value);
   } catch (error) {
     console.log("Error fetching notes: ", error);
   }
 };
 
-fetchStories();
+watch(
+  () => route.query.page,
+  (newPageValue) => {
+    const page = Number(newPageValue) || 1;
+    fetchStories(page);
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
   <Navbar />
   <main
-    class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-between gap-8 pb-6"
+    class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-between gap-8 pb-8"
   >
     <div
       v-for="story in stories.docs"
@@ -65,4 +76,5 @@ fetchStories();
       </div>
     </div>
   </main>
+  <Pagination :stories="stories" />
 </template>
