@@ -26,10 +26,13 @@ function jwtAuth() {
         "invalid token",
       ];
 
-      if (error.message === "jwt expired")
+      if (error.message === "jwt expired") {
+        error.code = 401;
         error.message = "Access token expired, please login again";
-      else if (errorMessages.includes(error.message))
+      } else if (errorMessages.includes(error.message)) {
+        error.code = 401;
         error.message = "Invalid access token";
+      }
 
       return res.status(error.code || 500).json({
         message: error.message || "Internal server error",
