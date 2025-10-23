@@ -1,11 +1,13 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useToast } from "vue-toastification";
 
 import Pagination from "../components/Pagination.vue";
 
 import api from "../lib/axios.js";
 
+const toast = useToast();
 const route = useRoute();
 const stories = ref([]);
 
@@ -15,9 +17,65 @@ const fetchStories = async (page) => {
       params: { page },
     });
     stories.value = res.data;
-    console.log(stories.value);
+    console.log(stories.value.docs);
   } catch (error) {
-    console.log(error);
+    toast.error("Internal server error", {
+      position: "top-center",
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: true,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+  }
+};
+
+const publishStory = async (story) => {
+  try {
+    const res = await api.put(`/stories/${story._id}`, {
+      published: !story.published,
+    });
+    story.published = res.data.published;
+    console.log(res.data.published);
+  } catch (error) {
+    if (error.status === 404) {
+      toast.error("Story not found", {
+        position: "top-center",
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: false,
+        hideProgressBar: true,
+        closeButton: "button",
+        icon: true,
+        rtl: false,
+      });
+      return;
+    }
+
+    toast.error("Internal server error", {
+      position: "top-center",
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: true,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
   }
 };
 
@@ -30,22 +88,32 @@ watch(
 
 <template>
   <main class="flex flex-col gap-6 items-center py-8">
-    <h1 class="text-[#195A94] text-center text-3xl/8 font-extrabold">
+    <router-link
+      to="/"
+      class="text-[#195A94] text-center text-3xl/8 font-extrabold"
+    >
       WordFlow
-    </h1>
-    <button
+    </router-link>
+    <router-link
+      to="/story/add"
       type="button"
       class="text-[#E0FBFC] bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg text-sm px-6 py-3 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-[120px]"
     >
       Add Story
-    </button>
+    </router-link>
     <ul class="w-[650px] border-1 border-b-0">
       <li
         v-for="story in stories.docs"
+        :key="story._id"
         class="flex items-center justify-between gap-4 px-4 py-4 border-b-1"
       >
         <div class="flex items-center gap-4">
-          <input type="checkbox" class="w-[25px] h-[25px]" />
+          <input
+            :checked="story.published"
+            @change="publishStory(story)"
+            type="checkbox"
+            class="w-[25px] h-[25px]"
+          />
           <div class="flex flex-col">
             <span class="text-sm font-semibold">Title: {{ story.title }}</span>
             <span class="text-sm">Author: {{ story.author }}</span>

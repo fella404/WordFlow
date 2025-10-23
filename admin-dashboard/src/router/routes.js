@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem("accessToken");
 
   if (to.meta.requiresAuth && !isAuthenticated) {
-    // Redirect ke login jika mencoba akses protected route tanpa token 
+    // Redirect ke login jika mencoba akses protected route tanpa token
     next("/login");
   } else if (
     (to.name === "Login" || to.name === "Register") &&

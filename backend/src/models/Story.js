@@ -30,10 +30,9 @@ const storySchema = new mongoose.Schema(
       enum: ["Beginner", "Intermediate", "Advanced"],
       default: "Beginner",
     },
-    status: {
-      type: String,
-      enum: ["draft", "published"],
-      default: "draft",
+    published: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

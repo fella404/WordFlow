@@ -17,10 +17,7 @@ class StoryController {
     try {
       const limit = Number(req.query.limit) || 9;
       const page = Number(req.query.page) || 1;
-      const story = await Story.paginate(
-        { status: "published" },
-        { limit, page }
-      );
+      const story = await Story.paginate({ published: true }, { limit, page });
       return res.status(200).json(story);
     } catch (error) {
       return res.status(500).json({ message: "Internal server error" });
@@ -55,7 +52,7 @@ class StoryController {
       const { id } = req.params;
       const story = await Story.findOne({
         _id: new mongoose.Types.ObjectId(id),
-        status: "published",
+        published: true,
       });
       if (!story) throw { code: 404, message: "Story not found" };
       return res.status(200).json(story);
