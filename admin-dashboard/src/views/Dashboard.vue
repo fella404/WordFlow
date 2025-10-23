@@ -1,12 +1,19 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
+
+import Pagination from "../components/Pagination.vue";
+
 import api from "../lib/axios.js";
 
+const route = useRoute();
 const stories = ref([]);
 
-const fetchStories = async () => {
+const fetchStories = async (page) => {
   try {
-    const res = await api.get("/stories");
+    const res = await api.get("/stories", {
+      params: { page },
+    });
     stories.value = res.data;
     console.log(stories.value);
   } catch (error) {
@@ -14,7 +21,11 @@ const fetchStories = async () => {
   }
 };
 
-fetchStories();
+watch(
+  () => route.query.page,
+  (newPage) => fetchStories(newPage),
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -28,7 +39,7 @@ fetchStories();
     >
       Add Story
     </button>
-    <ul class="border-1 border-b-0">
+    <ul class="w-[650px] border-1 border-b-0">
       <li
         v-for="story in stories.docs"
         class="flex items-center justify-between gap-4 px-4 py-4 border-b-1"
@@ -57,6 +68,7 @@ fetchStories();
         </div>
       </li>
     </ul>
+    <Pagination :stories="stories" />
   </main>
 </template>
 
