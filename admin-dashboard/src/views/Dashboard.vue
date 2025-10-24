@@ -4,6 +4,7 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 
 import Pagination from "../components/Pagination.vue";
+import EmptyState from "../components/EmptyState.vue";
 
 import api from "../lib/axios.js";
 
@@ -101,11 +102,11 @@ watch(
     >
       Add Story
     </router-link>
-    <ul class="w-[650px] border-1 border-b-0">
+    <ul v-if="stories.length > 0" class="w-[650px] border border-b-0">
       <li
         v-for="story in stories.docs"
         :key="story._id"
-        class="flex items-center justify-between gap-4 px-4 py-4 border-b-1"
+        class="flex items-center justify-between gap-4 px-4 py-4 border-b"
       >
         <div class="flex items-center gap-4">
           <input
@@ -136,6 +137,7 @@ watch(
         </div>
       </li>
     </ul>
+    <EmptyState v-else />
     <Pagination :stories="stories" />
   </main>
 </template>
