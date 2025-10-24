@@ -8,6 +8,7 @@ import Pagination from "../components/Pagination.vue";
 
 import { formatDate } from "../lib/utils.js";
 import api from "../lib/axios.js";
+import EmptyState from "../components/EmptyState.vue";
 
 const route = useRoute();
 const stories = ref([]);
@@ -54,6 +55,7 @@ watch(
     class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-between gap-8 pb-8"
   >
     <div
+      v-if="stories.length > 0"
       v-for="story in renderStories"
       :key="story._id"
       class="flex flex-col gap-4"
@@ -90,5 +92,6 @@ watch(
       </div>
     </div>
   </main>
+  <EmptyState />
   <Pagination :stories="stories" />
 </template>
