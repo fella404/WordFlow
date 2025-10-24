@@ -20,7 +20,7 @@ const fetchStories = async (page) => {
       params: { page },
     });
     stories.value = res.data;
-    console.log(stories.value);
+    console.log(stories.value.docs.length);
   } catch (error) {
     console.log("Error fetching notes: ", error);
   }
@@ -52,10 +52,10 @@ watch(
 <template>
   <Navbar @update:search="getSearch" />
   <main
+    v-if="stories && stories.docs && stories.docs.length > 0"
     class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-between gap-8 pb-8"
   >
     <div
-      v-if="stories.length > 0"
       v-for="story in renderStories"
       :key="story._id"
       class="flex flex-col gap-4"
@@ -92,6 +92,6 @@ watch(
       </div>
     </div>
   </main>
-  <EmptyState />
+  <EmptyState v-else />
   <Pagination :stories="stories" />
 </template>

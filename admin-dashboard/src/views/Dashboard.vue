@@ -102,7 +102,10 @@ watch(
     >
       Add Story
     </router-link>
-    <ul v-if="stories.length > 0" class="w-[650px] border border-b-0">
+    <ul
+      v-if="stories && stories.docs && stories.docs.length > 0"
+      class="w-[650px] border border-b-0"
+    >
       <li
         v-for="story in stories.docs"
         :key="story._id"
