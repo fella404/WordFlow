@@ -76,12 +76,16 @@ watch(
         }}
       </p>
       <div class="w-full flex justify-between">
-        <div class="flex gap-4 items-center">
-          <IoCalendar />
-          <span class="text-sm">{{
-            formatDate(new Date(story.createdAt))
-          }}</span>
+        <div class="">
+          <span class="text-sm">Level: Beginner</span>
+          <div class="flex gap-4 items-center">
+            <IoCalendar />
+            <span class="text-sm">{{
+              formatDate(new Date(story.createdAt))
+            }}</span>
+          </div>
         </div>
+
         <router-link
           :to="`/story/${story._id}`"
           class="flex items-center gap-4 h-[50px] bg-[#195A94] px-4 hover:bg-[#1e6aac] rounded"

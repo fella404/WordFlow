@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute, RouterLink } from "vue-router";
 import AddStory from "../components/AddStory.vue";
+import EditStory from "../components/EditStory.vue";
 
 const route = useRoute();
 </script>
@@ -14,5 +15,6 @@ const route = useRoute();
       WordFlow
     </router-link>
     <AddStory v-if="!route.params.id" />
+    <EditStory v-else :storyId="route.params.id" />
   </div>
 </template>

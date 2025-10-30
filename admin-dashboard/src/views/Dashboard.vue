@@ -18,7 +18,6 @@ const fetchStories = async (page) => {
       params: { page },
     });
     stories.value = res.data;
-    console.log(stories.value.docs);
   } catch (error) {
     toast.error("Internal server error", {
       position: "top-center",
@@ -43,7 +42,6 @@ const publishStory = async (story) => {
       published: !story.published,
     });
     story.published = res.data.published;
-    console.log(res.data.published);
   } catch (error) {
     if (error.status === 404) {
       toast.error("Story not found", {
@@ -63,6 +61,44 @@ const publishStory = async (story) => {
       return;
     }
 
+    toast.error("Internal server error", {
+      position: "top-center",
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: true,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+  }
+};
+
+const deleteStory = async (storyId) => {
+  try {
+    const res = await api.delete(`/stories/${storyId}`);
+    stories.value.docs = stories.value.docs.filter(
+      (story) => story._id !== storyId
+    );
+    toast.success("Story deleted successfully", {
+      position: "top-center",
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: true,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+  } catch (error) {
     toast.error("Internal server error", {
       position: "top-center",
       timeout: 5000,
@@ -125,13 +161,15 @@ watch(
         </div>
 
         <div class="flex gap-2">
-          <button
+          <router-link
+            :to="`/story/edit/${story._id}`"
             type="button"
             class="text-[#E0FBFC] bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-2xl text-sm px-5 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
           >
             Edit
-          </button>
+          </router-link>
           <button
+            @click="deleteStory(story._id)"
             type="button"
             class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-2xl text-sm px-5 py-2 dark:bg-red-500 dark:hover:bg-red-700 dark:focus:ring-red-900"
           >

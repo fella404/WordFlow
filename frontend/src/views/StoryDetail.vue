@@ -130,7 +130,7 @@ onMounted(() => {
       </div>
       <p class="text-[#747474] text-justify">{{ story.excerpt }}</p>
       <img :src="story.thumbnail" alt="img" class="h-[320px]" />
-      <p class="text-justify">{{ story.content }}</p>
+      <p class="text-justify whitespace-pre-line">{{ story.content }}</p>
       <div class="flex gap-4 justify-center">
         <button
           @click="
@@ -158,7 +158,7 @@ onMounted(() => {
       <h2 class="text-2xl font-semibold">Key Vocabulary</h2>
       <div
         v-for="vocab in story.vocabs"
-        class="flex flex-col gap-2 bg-[#EDEDED] p-4"
+        class="border flex flex-col gap-2 bg-[#EDEDED] p-4"
       >
         <h3 class="font-semibold">{{ vocab.word }}</h3>
         <p>Meaning: {{ vocab.meaning }}</p>
