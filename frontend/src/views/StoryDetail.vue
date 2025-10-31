@@ -122,14 +122,16 @@ onMounted(() => {
 <template>
   <Navbar />
   <main v-if="story" class="pb-6">
-    <section class="w-[600px] flex flex-col gap-4 mx-auto px-8 pb-8">
+    <section
+      class="w-full md:w-[600px] flex flex-col gap-4 mx-auto md:px-8 pb-8"
+    >
       <h2 class="text-2xl font-semibold">{{ story.title }}</h2>
       <div class="flex gap-4">
         <span>Copyright: {{ story.copyright }}</span>
         <span>Author: {{ story.author }}</span>
       </div>
       <p class="text-[#747474] text-justify">{{ story.excerpt }}</p>
-      <img :src="story.thumbnail" alt="img" class="h-[320px]" />
+      <img :src="story.thumbnail" alt="img" class="h-[220px] md:h-[320px]" />
       <p class="text-justify whitespace-pre-line">{{ story.content }}</p>
       <div class="flex gap-4 justify-center">
         <button
@@ -154,17 +156,22 @@ onMounted(() => {
       </div>
     </section>
     <hr class="w-[536px] mx-auto" />
-    <section class="w-[600px] flex flex-col gap-4 mx-auto p-8">
+    <section
+      class="w-full md:w-[600px] flex flex-col gap-4 mx-auto md:px-8 py-8"
+    >
       <h2 class="text-2xl font-semibold">Key Vocabulary</h2>
       <div
         v-for="vocab in story.vocabs"
         class="border flex flex-col gap-2 bg-[#EDEDED] p-4"
       >
         <h3 class="font-semibold">{{ vocab.word }}</h3>
-        <p>Meaning: {{ vocab.meaning }}</p>
+        <p class="text-justify">Meaning: {{ vocab.meaning }}</p>
         <p>Example:</p>
         <ol>
-          <li v-for="(example, index) in vocab.example" class="text-base/5">
+          <li
+            v-for="(example, index) in vocab.example"
+            class="py-1 text-base/5 text-justify"
+          >
             {{ index + 1 }}. {{ example }}
           </li>
         </ol>
