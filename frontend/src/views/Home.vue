@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
 
@@ -12,7 +12,6 @@ import EmptyState from "../components/EmptyState.vue";
 
 const route = useRoute();
 const stories = ref([]);
-const searchInput = ref("");
 
 const fetchStories = async (page) => {
   try {
@@ -26,19 +25,6 @@ const fetchStories = async (page) => {
   }
 };
 
-const getSearch = (val) => (searchInput.value = val);
-
-const renderStories = computed(() => {
-  if (!stories.value || !stories.value.docs) return [];
-
-  const storiesArray = stories.value.docs;
-  const searchTerm = searchInput.value.toLowerCase().trim();
-
-  return storiesArray.filter((story) => {
-    return story.title.toLowerCase().includes(searchTerm);
-  });
-});
-
 watch(
   () => route.query.page,
   (newPageValue) => {
@@ -50,13 +36,13 @@ watch(
 </script>
 
 <template>
-  <Navbar @update:search="getSearch" />
+  <Navbar />
   <main
     v-if="stories && stories.docs && stories.docs.length > 0"
     class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-between gap-8 pb-8"
   >
     <div
-      v-for="story in renderStories"
+      v-for="story in stories.docs"
       :key="story._id"
       class="flex flex-col gap-4"
     >
@@ -77,7 +63,7 @@ watch(
       </p>
       <div class="w-full flex justify-between">
         <div class="">
-          <span class="text-sm">Level: Beginner</span>
+          <span class="text-sm">Level: {{story.level}}</span>
           <div class="flex gap-4 items-center">
             <IoCalendar />
             <span class="text-sm">{{

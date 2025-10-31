@@ -30,6 +30,7 @@ class StoryController {
       await story.save();
       res.status(201).json(story);
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
@@ -86,6 +87,23 @@ class StoryController {
       return res.status(error.code || 500).json({
         message: error.message || "Internal server error",
       });
+    }
+  }
+
+  async searchStories(req, res) {
+    try {
+      const { search } = req.query;
+      console.log(search);
+      let filter = { published: true };
+
+      if (search && search.trim()) {
+        filter.title = { $regex: search, $options: "i" };
+      }
+
+      const story = await Story.find(filter).sort({ createdAt: -1 });
+      return res.status(200).json(story);
+    } catch (error) {
+      return res.status(500).json({ message: "Internal server error" });
     }
   }
 }

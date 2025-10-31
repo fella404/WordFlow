@@ -26,6 +26,7 @@ Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapi
     "https://i.pinimg.com/1200x/2d/63/8e/2d638eb6e4d62e47c9a991d23ef22c0f.jpg",
   copyright: "original",
   author: "John Doe",
+  level: "Beginner",
   vocabs: [
     { word: "", meaning: "", example: [""] },
     { word: "", meaning: "", example: [""] },
@@ -63,6 +64,7 @@ const createStory = async () => {
       thumbnail: formData.value.thumbnail,
       copyright: formData.value.copyright,
       author: formData.value.author,
+      level: formData.value.level,
       vocabs: [
         {
           word: formData.value.vocabs[0].word,
@@ -105,8 +107,7 @@ const createStory = async () => {
     });
     router.push("/");
   } catch (error) {
-    console.log(error);
-    toast.error("Internal server error", {
+    toast.error("All field required", {
       position: "top-center",
       timeout: 5000,
       closeOnClick: true,
@@ -312,6 +313,7 @@ const createStory = async () => {
           name="level"
           id="beginner"
           value="Beginner"
+          v-model="formData.level"
           checked
         />
         <label for="beginner">Beginner</label>
@@ -323,6 +325,7 @@ const createStory = async () => {
           name="level"
           id="intermediate"
           value="Intermediate"
+          v-model="formData.level"
         />
         <label for="intermediate">Intermediate</label>
       </div>
@@ -333,6 +336,7 @@ const createStory = async () => {
           name="level"
           id="advanced"
           value="Advanced"
+          v-model="formData.level"
         />
         <label for="advanced">Advanced</label>
       </div>

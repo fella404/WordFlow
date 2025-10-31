@@ -6,5 +6,6 @@ const router = Router();
 
 router.get("/stories", StoryController.getPublishedStories);
 router.get("/stories/:id", StoryController.getPublishedStoryById);
+router.get("/search", StoryController.searchStories);
 
 export default router;
