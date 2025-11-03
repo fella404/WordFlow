@@ -70,21 +70,21 @@ const createStory = async () => {
           word: formData.value.vocabs[0].word,
           meaning: formData.value.vocabs[0].meaning,
           example: examplesInput[0]
-            ? examplesInput[0].split(",").map((ex) => ex.trim())
+            ? examplesInput[0].split(";").map((ex) => ex.trim())
             : [],
         },
         {
           word: formData.value.vocabs[1].word,
           meaning: formData.value.vocabs[1].meaning,
           example: examplesInput[1]
-            ? examplesInput[1].split(",").map((ex) => ex.trim())
+            ? examplesInput[1].split(";").map((ex) => ex.trim())
             : [],
         },
         {
           word: formData.value.vocabs[2].word,
           meaning: formData.value.vocabs[2].meaning,
           example: examplesInput[2]
-            ? examplesInput[2].split(",").map((ex) => ex.trim())
+            ? examplesInput[2].split(";").map((ex) => ex.trim())
             : [],
         },
       ],
