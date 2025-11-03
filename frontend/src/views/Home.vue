@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
 
@@ -25,6 +25,12 @@ const fetchStories = async (page) => {
   }
 };
 
+const stopSpeaking = () => {
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+};
+
 watch(
   () => route.query.page,
   (newPageValue) => {
@@ -33,6 +39,10 @@ watch(
   },
   { immediate: true }
 );
+
+onMounted(() => {
+  stopSpeaking();
+});
 </script>
 
 <template>
@@ -63,7 +73,7 @@ watch(
       </p>
       <div class="w-full flex justify-between">
         <div class="">
-          <span class="text-sm">Level: {{story.level}}</span>
+          <span class="text-sm">Level: {{ story.level }}</span>
           <div class="flex gap-4 items-center">
             <IoCalendar />
             <span class="text-sm">{{
