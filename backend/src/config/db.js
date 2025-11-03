@@ -5,7 +5,7 @@ const env = dotenv.config({ quiet: true }).parsed;
 
 const connection = async () => {
   mongoose.connect(env.MONGO_URI, {
-    dbName: env.DB_NAME,
+    appName: env.appName,
   });
 
   const conn = mongoose.connection;
