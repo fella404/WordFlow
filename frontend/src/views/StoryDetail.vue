@@ -61,6 +61,8 @@ const startSpeaking = () => {
 
   const utterance = new SpeechSynthesisUtterance(story.value.content);
   utterance.lang = "en-US";
+  utterance.pitch = 0.8;
+  utterance.rate = 0.7;
 
   utterance.onstart = () => {
     isSpeaking.value = true;
@@ -168,11 +170,9 @@ onMounted(() => {
         <p class="text-justify">Meaning: {{ vocab.meaning }}</p>
         <p>Example:</p>
         <ol>
-          <li
-            v-for="(example, index) in vocab.example"
-            class="py-1 text-base/5 text-justify"
-          >
-            {{ index + 1 }}. {{ example }}
+          <li v-for="(example, index) in vocab.example" :key="index" class="flex gap-2">
+            <p>{{ index + 1 }}.</p>
+            <p>{{ example }}</p>
           </li>
         </ol>
       </div>
