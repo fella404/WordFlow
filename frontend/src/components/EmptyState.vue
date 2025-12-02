@@ -84,12 +84,12 @@
         <h2
           class="text-center text-black text-xl font-semibold leading-loose pb-2"
         >
-          No Stories were found.
+          Cerita tidak ditemukan
         </h2>
         <p
           class="text-center text-black text-base font-normal leading-relaxed pb-4"
         >
-          Stories are not yet available. Please check back shortly.
+          Cerita belum tersedia sekarang, mohon cek lagi kedepannya.
         </p>
       </div>
     </div>

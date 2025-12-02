@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const publicApi = axios.create({
-  baseURL: "http://localhost:3000/api/public",
+  baseURL: `${import.meta.env.VITE_BACKEND_API_URL}/public`,
 });
 
 export default publicApi;

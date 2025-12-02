@@ -28,7 +28,6 @@ const performSearch = async (query) => {
       params: { search: query },
     });
     searchResults.value = res.data;
-    console.log(searchResults.value);
   } catch (error) {
     console.log("Error performing search: ", error);
     searchResults.value = [];

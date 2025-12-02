@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
-import adminApi from "../../../../admin-dashboard/src/lib/axios";
+import adminApi from "../../lib/adminAxios.js";
 
 const toast = useToast();
 const router = useRouter();
@@ -32,14 +32,11 @@ const handleLogin = async () => {
   }
 
   try {
-    console.log("bef res");
     const res = await adminApi.post("/login", {
       email: formData.value.email,
       password: formData.value.password,
     });
-    console.log("after res");
-
-    console.log(res.data);
+    
     localStorage.setItem("accessToken", res.data.accessToken);
     localStorage.setItem("refreshToken", res.data.refreshToken);
     localStorage.setItem("user", JSON.stringify(res.data.username));

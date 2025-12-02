@@ -14,9 +14,7 @@ const connection = async () => {
   // });
 
   try {
-    const connection = await mongoose.connect(env.MONGO_URI, {
-      dbName: env.dbName,
-    });
+    const connection = await mongoose.connect(env.MONGO_URI);
     console.log("MongoDB connected successfully");
   } catch (error) {
     console.error("MongoDB failed connected");

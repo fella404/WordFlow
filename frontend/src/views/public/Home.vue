@@ -6,7 +6,6 @@ import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
 import Navbar from "../../components/Navbar.vue";
 import Pagination from "../../components/Pagination.vue";
 
-import { formatDate } from "../../lib/utils.js";
 import publicApi from "../../lib/publicAxios.js";
 import EmptyState from "../../components/EmptyState.vue";
 
