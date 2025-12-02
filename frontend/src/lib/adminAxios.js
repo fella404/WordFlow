@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const adminApi = axios.create({
-  baseURL: `${import.meta.env.VITE_BACKEND_API_URL}/admin`,
+  baseURL:
+    process.env.NODE_ENV === "production"
+      ? `${import.meta.env.VITE_BACKEND_API_URL}/admin`
+      : "http://localhost:3000/api/admin",
 });
 
 adminApi.interceptors.request.use(
@@ -42,7 +45,9 @@ adminApi.interceptors.response.use(
 
         // ✅ Request refresh token
         const refreshResponse = await axios.post(
-          `${import.meta.env.VITE_BACKEND_API_URL}/api/admin/refresh-token`,
+          process.env.NODE_ENV === "production"
+            ? `${import.meta.env.VITE_BACKEND_API_URL}/api/admin/refresh-token`
+            : "http://localhost:3000/api/admin/refresh-token",
           { refreshToken }
         );
 

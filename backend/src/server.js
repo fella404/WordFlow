@@ -15,7 +15,10 @@ const __dirname = path.resolve();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "wordflow-production.up.railway.app"
+        : "http://localhost:5173",
   })
 );
 app.use(express.json());

@@ -67,10 +67,12 @@ const startSpeaking = () => {
 
   utterance.onstart = () => {
     isSpeaking.value = true;
+    isPaused.value = false;
   };
 
   utterance.onend = () => {
     isSpeaking.value = false;
+    isPaused.value = false;
   };
 
   utterance.onerror = (event) => {
@@ -99,7 +101,6 @@ const pauseSpeaking = () => {
   if ("speechSynthesis" in window && isSpeaking.value && !isPaused.value) {
     window.speechSynthesis.pause();
     isPaused.value = true;
-    isSpeaking.value = false;
   }
 };
 
@@ -121,15 +122,13 @@ const stopSpeaking = () => {
 
 onMounted(() => {
   fetchStory();
-  console.log(isSpeaking.value);
-  console.log(isPaused.value);
   stopSpeaking();
 });
 </script>
 
 <template>
   <Navbar />
-  <main v-if="story" class="py-6">
+  <main v-if="story" class="p-6">
     <section
       class="w-full md:w-[600px] flex flex-col gap-4 mx-auto md:px-8 pb-8"
     >
@@ -163,7 +162,7 @@ onMounted(() => {
         </button>
       </div>
     </section>
-    <hr class="w-[536px] mx-auto" />
+    <hr class="w-full md:w-[536px] mx-auto" />
     <section
       class="w-full md:w-[600px] flex flex-col gap-4 mx-auto md:px-8 py-8"
     >
