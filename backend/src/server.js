@@ -7,7 +7,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
 import connection from "./config/db.js";
 
-const env = dotenv.config({ quiet: true }).parsed;
+dotenv.config();
 
 const app = express();
 
@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 connection().then(() => {
-  app.listen(env.APP_PORT || 3000, () => {
-    console.log(`Server is running on port ${env.APP_PORT || 3000}`);
+  app.listen(process.env.APP_PORT || 3000, () => {
+    console.log(`Server is running on port ${process.env.APP_PORT || 3000}`);
   });
 });
