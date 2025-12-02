@@ -1,8 +1,9 @@
 <script setup>
 import { ref, watch } from "vue";
 import { RouterLink } from "vue-router";
-import { formatDate } from "../lib/utils.js";
-import api from "../lib/axios.js";
+import { GiOpenBook } from "vue-icons-plus/gi";
+
+import api from "../lib/publicAxios.js";
 
 const searchQuery = ref("");
 const searchResults = ref([]);
@@ -43,12 +44,13 @@ watch(searchQuery, (newQuery) => {
 </script>
 
 <template>
-  <header class="py-6 flex flex-col gap-4 md:flex-row justify-between">
-    <div class="flex flex-col gap-2">
+  <header
+    class="p-6 flex flex-col gap-4 md:flex-row justify-between bg-white border-b border-gray-200 w-full z-50 shadow-sm"
+  >
+    <div class="flex items-center gap-2">
       <router-link to="/">
         <h1 class="text-[#195A94] text-3xl/8 font-extrabold">WordFlow</h1>
       </router-link>
-      <p class="font-medium text-lg/7">{{ formatDate(new Date()) }}</p>
     </div>
     <div class="md:w-[350px] my-auto">
       <input

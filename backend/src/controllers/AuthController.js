@@ -61,7 +61,7 @@ class AuthController {
       const accessToken = jsonwebtoken.sign(
         { id: user._id },
         process.env.JWT_ACCESS_TOKEN_SECRET,
-        { expiresIn: "15m" }
+        { expiresIn: "1d" }
       );
 
       const refreshToken = jsonwebtoken.sign(
@@ -98,7 +98,7 @@ class AuthController {
       const accessToken = jsonwebtoken.sign(
         { id: verified.id },
         process.env.JWT_ACCESS_TOKEN_SECRET,
-        { expiresIn: "15m" }
+        { expiresIn: "1d" }
       );
       const newRefreshToken = jsonwebtoken.sign(
         { id: verified.id },

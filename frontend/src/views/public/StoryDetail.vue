@@ -5,8 +5,8 @@ import { useToast } from "vue-toastification";
 import { AiOutlinePlayCircle, AiOutlinePauseCircle } from "vue-icons-plus/ai";
 import { IoStopCircleOutline } from "vue-icons-plus/io";
 
-import api from "../lib/axios.js";
-import Navbar from "../components/Navbar.vue";
+import publicApi from "../../lib/publicAxios.js";
+import Navbar from "../../components/Navbar.vue";
 
 const toast = useToast();
 const route = useRoute();
@@ -16,7 +16,7 @@ const isPaused = ref(false);
 
 const fetchStory = async () => {
   try {
-    const res = await api.get(`/stories/${route.params.id}`);
+    const res = await publicApi.get(`/stories/${route.params.id}`);
     story.value = res.data;
   } catch (error) {
     console.log("Error fetching notes: ", error);
@@ -39,6 +39,7 @@ const startSpeaking = () => {
       icon: true,
       rtl: false,
     });
+    isSpeaking.value = true;
     return;
   }
 
@@ -61,8 +62,8 @@ const startSpeaking = () => {
 
   const utterance = new SpeechSynthesisUtterance(story.value.content);
   utterance.lang = "en-US";
-  utterance.pitch = 0.8;
-  utterance.rate = 0.7;
+  utterance.pitch = 0.9;
+  utterance.rate = 0.9;
 
   utterance.onstart = () => {
     isSpeaking.value = true;
@@ -98,6 +99,7 @@ const pauseSpeaking = () => {
   if ("speechSynthesis" in window && isSpeaking.value && !isPaused.value) {
     window.speechSynthesis.pause();
     isPaused.value = true;
+    isSpeaking.value = false;
   }
 };
 
@@ -105,6 +107,7 @@ const resumeSpeaking = () => {
   if ("speechSynthesis" in window && isPaused.value) {
     window.speechSynthesis.resume();
     isPaused.value = false;
+    isSpeaking.value = true;
   }
 };
 
@@ -112,18 +115,21 @@ const stopSpeaking = () => {
   if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
     isSpeaking.value = false;
+    isPaused.value = false;
   }
 };
 
 onMounted(() => {
   fetchStory();
+  console.log(isSpeaking.value);
+  console.log(isPaused.value);
   stopSpeaking();
 });
 </script>
 
 <template>
   <Navbar />
-  <main v-if="story" class="pb-6">
+  <main v-if="story" class="py-6">
     <section
       class="w-full md:w-[600px] flex flex-col gap-4 mx-auto md:px-8 pb-8"
     >
@@ -170,7 +176,11 @@ onMounted(() => {
         <p class="text-justify">Meaning: {{ vocab.meaning }}</p>
         <p>Example:</p>
         <ol>
-          <li v-for="(example, index) in vocab.example" :key="index" class="flex gap-2">
+          <li
+            v-for="(example, index) in vocab.example"
+            :key="index"
+            class="flex gap-2"
+          >
             <p>{{ index + 1 }}.</p>
             <p>{{ example }}</p>
           </li>

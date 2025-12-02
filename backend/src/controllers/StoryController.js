@@ -93,7 +93,6 @@ class StoryController {
   async searchStories(req, res) {
     try {
       const { search } = req.query;
-      console.log(search);
       let filter = { published: true };
 
       if (search && search.trim()) {

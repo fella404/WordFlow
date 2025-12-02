@@ -1,0 +1,387 @@
+<script setup>
+import { ref, reactive, defineProps } from "vue";
+import { useToast } from "vue-toastification";
+import { useRouter } from "vue-router";
+
+import adminApi from "../lib/adminAxios.js";
+
+const props = defineProps(["storyId"]);
+const router = useRouter();
+const toast = useToast();
+
+const examplesInput = reactive(["", "", ""]);
+const formData = ref({
+  title: "",
+  excerpt: "",
+  content: "",
+  thumbnail: "",
+  copyright: "",
+  author: "",
+  level: "Beginner",
+  vocabs: [
+    { word: "", meaning: "", example: [""] },
+    { word: "", meaning: "", example: [""] },
+    { word: "", meaning: "", example: [""] },
+  ],
+});
+
+const getStory = async () => {
+  try {
+    const res = await adminApi.get(`/stories/${props.storyId}`);
+    formData.value.title = res.data.title;
+    formData.value.excerpt = res.data.excerpt;
+    formData.value.content = res.data.content;
+    formData.value.thumbnail = res.data.thumbnail;
+    formData.value.copyright = res.data.copyright;
+    formData.value.author = res.data.author;
+    formData.value.level = res.data.level;
+    formData.value.vocabs = res.data.vocabs;
+    examplesInput[0] = res.data.vocabs[0].example.join(";");
+    examplesInput[1] = res.data.vocabs[1].example.join(";");
+    examplesInput[2] = res.data.vocabs[2].example.join(";");
+  } catch (error) {
+    toast.error("Internal server error", {
+      position: "top-center",
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: true,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+  }
+};
+
+const editStory = async () => {
+  if (
+    !formData.value.title ||
+    !formData.value.excerpt ||
+    !formData.value.content
+  ) {
+    toast.error("All fields are required!", {
+      position: "top-center",
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: true,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+    return;
+  }
+
+  try {
+    const res = await adminApi.put(`/stories/${props.storyId}`, {
+      title: formData.value.title,
+      excerpt: formData.value.excerpt,
+      content: formData.value.content,
+      thumbnail: formData.value.thumbnail,
+      copyright: formData.value.copyright,
+      author: formData.value.author,
+      level: formData.value.level,
+      vocabs: [
+        {
+          word: formData.value.vocabs[0].word,
+          meaning: formData.value.vocabs[0].meaning,
+          example: examplesInput[0]
+            ? examplesInput[0].split(";").map((ex) => ex.trim())
+            : [],
+        },
+        {
+          word: formData.value.vocabs[1].word,
+          meaning: formData.value.vocabs[1].meaning,
+          example: examplesInput[1]
+            ? examplesInput[1].split(";").map((ex) => ex.trim())
+            : [],
+        },
+        {
+          word: formData.value.vocabs[2].word,
+          meaning: formData.value.vocabs[2].meaning,
+          example: examplesInput[2]
+            ? examplesInput[2].split(";").map((ex) => ex.trim())
+            : [],
+        },
+      ],
+    });
+
+    toast.success("Success edit story", {
+      position: "top-center",
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: true,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+    router.push("/admin/");
+  } catch (error) {
+    console.log(error);
+    toast.error("Internal server error", {
+      position: "top-center",
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: false,
+      hideProgressBar: true,
+      closeButton: "button",
+      icon: true,
+      rtl: false,
+    });
+  }
+};
+
+getStory();
+</script>
+
+<template>
+  <form
+    @submit.prevent="editStory"
+    class="w-[900px] flex flex-col gap-4 border mx-auto p-8"
+  >
+    <div>
+      <label for="title" class="block mb-1 font-medium">Title(required)</label>
+      <input
+        v-model="formData.title"
+        type="text"
+        id="title"
+        class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+        placeholder="title"
+        required
+      />
+    </div>
+    <div>
+      <label for="excerpt" class="block mb-1 font-medium"
+        >Excerpt(required)</label
+      >
+      <textarea
+        v-model="formData.excerpt"
+        id="excerpt"
+        class="border rounded-sm block w-full p-2.5 h-[100px] placeholder:text-gray-600"
+        placeholder="excerpt"
+        required
+      ></textarea>
+    </div>
+    <div>
+      <label for="content" class="block mb-1 font-medium"
+        >Content(required)</label
+      >
+      <textarea
+        v-model="formData.content"
+        id="content"
+        class="border rounded-sm block w-full p-2.5 h-[500px] placeholder:text-gray-600"
+        placeholder="content"
+        required
+      ></textarea>
+    </div>
+    <div>
+      <label class="block mb-2 font-medium" for="file_input"
+        >Upload image</label
+      >
+      <input
+        v-model="formData.thumbnail"
+        type="text"
+        id="file_input"
+        class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+        placeholder="image (link only)"
+      />
+    </div>
+    <div>
+      <label for="copyright" class="block mb-1 font-medium">Copyright</label>
+      <input
+        v-model="formData.copyright"
+        type="text"
+        id="copyright"
+        class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+        placeholder="copyright [original, adapted, public_domain, ai generated]"
+      />
+    </div>
+    <div>
+      <label for="author" class="block mb-1 font-medium">Author</label>
+      <input
+        v-model="formData.author"
+        type="text"
+        id="author"
+        class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+        placeholder="author"
+      />
+    </div>
+    <fieldset class="border p-4 flex flex-col gap-6">
+      <legend class="text-xl">Vocabularies</legend>
+      <fieldset class="border p-4">
+        <div class="flex flex-col gap-4">
+          <div>
+            <label for="word-1" class="block mb-1 font-medium">Word</label>
+            <input
+              v-model="formData.vocabs[0].word"
+              type="text"
+              id="word-1"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="word"
+            />
+          </div>
+          <div>
+            <label for="meaning-1" class="block mb-1 font-medium"
+              >Meaning</label
+            >
+            <input
+              v-model="formData.vocabs[0].meaning"
+              type="text"
+              id="meaning-1"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="meaning"
+            />
+          </div>
+          <div>
+            <label for="example-1" class="block mb-1 font-medium"
+              >Examples</label
+            >
+            <input
+              v-model="examplesInput[0]"
+              type="text"
+              id="example-1"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="separate examples with semicolon (;)"
+            />
+          </div>
+        </div>
+      </fieldset>
+      <fieldset class="border p-4">
+        <div class="flex flex-col gap-4">
+          <div>
+            <label for="word-2" class="block mb-1 font-medium">Word</label>
+            <input
+              v-model="formData.vocabs[1].word"
+              type="text"
+              id="word-2"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="word"
+            />
+          </div>
+          <div>
+            <label for="meaning-2" class="block mb-1 font-medium"
+              >Meaning</label
+            >
+            <input
+              v-model="formData.vocabs[1].meaning"
+              type="text"
+              id="meaning-2"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="meaning"
+            />
+          </div>
+          <div>
+            <label for="example-2" class="block mb-1 font-medium"
+              >Examples</label
+            >
+            <input
+              v-model="examplesInput[1]"
+              type="text"
+              id="example-2"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="separate examples with coma (,)"
+            />
+          </div>
+        </div>
+      </fieldset>
+      <fieldset class="border p-4">
+        <div class="flex flex-col gap-4">
+          <div>
+            <label for="word-3" class="block mb-1 font-medium">Word</label>
+            <input
+              v-model="formData.vocabs[2].word"
+              type="text"
+              id="word-3"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="word"
+            />
+          </div>
+          <div>
+            <label for="meaning-3" class="block mb-1 font-medium"
+              >Meaning</label
+            >
+            <input
+              v-model="formData.vocabs[2].meaning"
+              type="text"
+              id="meaning-3"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="meaning"
+            />
+          </div>
+          <div>
+            <label for="example-3" class="block mb-1 font-medium"
+              >Examples</label
+            >
+            <input
+              v-model="examplesInput[2]"
+              type="text"
+              id="example-3"
+              class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
+              placeholder="separate examples with coma (,)"
+            />
+          </div>
+        </div>
+      </fieldset>
+    </fieldset>
+    <fieldset class="flex border justify-between gap-2 p-3 pt-2">
+      <legend class="text-xl">Level</legend>
+      <div>
+        <input
+          class="mr-2"
+          type="radio"
+          name="level"
+          id="beginner"
+          value="Beginner"
+          v-model="formData.level"
+          checked
+        />
+        <label for="beginner">Beginner</label>
+      </div>
+      <div>
+        <input
+          class="mr-2"
+          type="radio"
+          name="level"
+          id="intermediate"
+          value="Intermediate"
+          v-model="formData.level"
+        />
+        <label for="intermediate">Intermediate</label>
+      </div>
+      <div>
+        <input
+          class="mr-2"
+          type="radio"
+          name="level"
+          id="advanced"
+          value="Advanced"
+          v-model="formData.level"
+        />
+        <label for="advanced">Advanced</label>
+      </div>
+    </fieldset>
+    <button
+      type="submit"
+      class="text-[#E0FBFC] bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-bold rounded-lg text-sm px-8 py-3 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 mx-auto mt-4"
+    >
+      Edit Story
+    </button>
+  </form>
+</template>

@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const api = axios.create({
+const adminApi = axios.create({
   baseURL: "http://localhost:3000/api/admin",
 });
 
-api.interceptors.request.use(
+adminApi.interceptors.request.use(
   (config) => {
     // Get token from localStorage
     const token = localStorage.getItem("accessToken");
@@ -22,7 +22,7 @@ api.interceptors.request.use(
 );
 
 // ✅ Response interceptor untuk handle token expiry
-api.interceptors.response.use(
+adminApi.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
@@ -71,4 +71,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default adminApi;
