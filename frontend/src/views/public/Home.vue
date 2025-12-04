@@ -5,21 +5,26 @@ import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
 
 import Navbar from "../../components/Navbar.vue";
 import Pagination from "../../components/Pagination.vue";
+import EmptyState from "../../components/EmptyState.vue";
+import LoadingState from "../../components/LoadingState.vue";
 
 import publicApi from "../../lib/publicAxios.js";
-import EmptyState from "../../components/EmptyState.vue";
 
 const route = useRoute();
 const stories = ref([]);
+const isLoading = ref(false);
 
 const fetchStories = async (page) => {
   try {
+    isLoading.value = true;
     const res = await publicApi.get("/stories", {
       params: { page },
     });
     stories.value = res.data;
   } catch (error) {
     console.log("Error fetching notes: ", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -57,8 +62,14 @@ onMounted(() => {
     </p>
   </div>
 
+  <LoadingState v-if="isLoading" />
+
+  <EmptyState
+    v-else-if="!isLoading && (!stories.docs || stories.docs.length === 0)"
+  />
+
   <main
-    v-if="stories && stories.docs && stories.docs.length > 0"
+    v-else
     class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-between place-content-center gap-8 pb-8"
   >
     <div
@@ -99,6 +110,5 @@ onMounted(() => {
       </div>
     </div>
   </main>
-  <EmptyState v-else />
   <Pagination :stories="stories" />
 </template>

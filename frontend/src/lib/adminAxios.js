@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "../router/router.js";
 
 const adminApi = axios.create({
   baseURL:
@@ -67,7 +68,7 @@ adminApi.interceptors.response.use(
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         localStorage.removeItem("user");
-        window.location.href = "/login";
+        router.push("/admin/login");
         return Promise.reject(refreshError);
       }
     }

@@ -39,7 +39,6 @@ const startSpeaking = () => {
       icon: true,
       rtl: false,
     });
-    isSpeaking.value = true;
     return;
   }
 
@@ -77,6 +76,7 @@ const startSpeaking = () => {
 
   utterance.onerror = (event) => {
     isSpeaking.value = false;
+    isPaused.value = false;
     if (event.error === "interrupted") return;
     toast.error("Internal server error", {
       position: "top-center",
@@ -101,6 +101,7 @@ const pauseSpeaking = () => {
   if ("speechSynthesis" in window && isSpeaking.value && !isPaused.value) {
     window.speechSynthesis.pause();
     isPaused.value = true;
+    isSpeaking.value = false;
   }
 };
 

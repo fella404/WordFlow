@@ -36,7 +36,7 @@ const handleLogin = async () => {
       email: formData.value.email,
       password: formData.value.password,
     });
-    
+
     localStorage.setItem("accessToken", res.data.accessToken);
     localStorage.setItem("refreshToken", res.data.refreshToken);
     localStorage.setItem("user", JSON.stringify(res.data.username));
@@ -55,10 +55,9 @@ const handleLogin = async () => {
       icon: true,
       rtl: false,
     });
-
     router.push("/admin/");
   } catch (error) {
-    if (error.status === 400) {
+    if (error.response?.status === 400) {
       toast.error("All fields are required!", {
         position: "top-center",
         timeout: 5000,
@@ -74,8 +73,7 @@ const handleLogin = async () => {
         rtl: false,
       });
       return;
-    }
-    if (error.status === 404) {
+    } else if (error.response?.status === 404) {
       toast.error("User not found", {
         position: "top-center",
         timeout: 5000,
@@ -92,43 +90,6 @@ const handleLogin = async () => {
       });
       formData.value.email = "";
       formData.value.password = "";
-      return;
-    }
-    if (error.status === 401) {
-      toast.error("Invalid password", {
-        position: "top-center",
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-      });
-      formData.value.password = "";
-      return;
-    }
-
-    if (error.response?.status === 428 || error.response?.status === 401) {
-      toast.error("Please login again", {
-        position: "top-center",
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-      });
-      router.push("/login");
       return;
     }
 
