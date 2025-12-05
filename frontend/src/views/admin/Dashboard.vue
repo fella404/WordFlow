@@ -4,9 +4,9 @@ import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
 
 import Pagination from "../../components/Pagination.vue";
-import EmptyState from "../../components/EmptyState.vue";
 
 import adminApi from "../../lib/adminAxios.js";
+import NotFound from "../../components/NotFound.vue";
 
 const toast = useToast();
 const route = useRoute();
@@ -178,7 +178,11 @@ watch(
         </div>
       </li>
     </ul>
-    <EmptyState v-else />
+    <NotFound
+      heading="Cerita tidak ditemukan"
+      paragraph="Tambah cerita sekarang!"
+      v-else
+    />
     <Pagination :stories="stories" />
   </main>
 </template>

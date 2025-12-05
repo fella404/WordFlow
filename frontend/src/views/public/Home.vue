@@ -5,8 +5,9 @@ import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
 
 import Navbar from "../../components/Navbar.vue";
 import Pagination from "../../components/Pagination.vue";
-import EmptyState from "../../components/EmptyState.vue";
+import NotFound from "../../components/NotFound.vue";
 import LoadingState from "../../components/LoadingState.vue";
+import Back from "../../components/Back.vue";
 
 import publicApi from "../../lib/publicAxios.js";
 
@@ -64,7 +65,9 @@ onMounted(() => {
 
   <LoadingState v-if="isLoading" />
 
-  <EmptyState
+  <NotFound
+    heading="Cerita tidak ditemukan"
+    paragraph="Cerita belum tersedia, silahkan cek kembali dalam waktu dekat."
     v-else-if="!isLoading && (!stories.docs || stories.docs.length === 0)"
   />
 

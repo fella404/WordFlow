@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <div class="w-full flex items-center justify-center">
+  <div class="w-full flex items-center justify-center my-24">
     <div class="grid gap-3">
       <div class="flex items-center justify-center">
         <svg

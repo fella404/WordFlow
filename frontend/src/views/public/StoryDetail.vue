@@ -2,24 +2,31 @@
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useToast } from "vue-toastification";
-import { AiOutlinePlayCircle, AiOutlinePauseCircle } from "vue-icons-plus/ai";
-import { IoStopCircleOutline } from "vue-icons-plus/io";
+import { BiPlay } from "vue-icons-plus/bi";
+import { FaPauseCircle } from "vue-icons-plus/fa";
 
 import publicApi from "../../lib/publicAxios.js";
 import Navbar from "../../components/Navbar.vue";
+import NotFound from "../../components/NotFound.vue";
+import LoadingState from "../../components/LoadingState.vue";
+import Back from "../../components/Back.vue";
 
 const toast = useToast();
 const route = useRoute();
 const story = ref(null);
 const isSpeaking = ref(false);
 const isPaused = ref(false);
+const isLoading = ref(false);
 
 const fetchStory = async () => {
   try {
+    isLoading.value = true;
     const res = await publicApi.get(`/stories/${route.params.id}`);
     story.value = res.data;
   } catch (error) {
     console.log("Error fetching notes: ", error);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -61,8 +68,8 @@ const startSpeaking = () => {
 
   const utterance = new SpeechSynthesisUtterance(story.value.content);
   utterance.lang = "en-US";
-  utterance.pitch = 0.9;
-  utterance.rate = 0.9;
+  utterance.pitch = 0.8;
+  utterance.rate = 0.8;
 
   utterance.onstart = () => {
     isSpeaking.value = true;
@@ -129,39 +136,67 @@ onMounted(() => {
 
 <template>
   <Navbar />
-  <main v-if="story" class="p-6">
+  <LoadingState v-if="isLoading" />
+  <NotFound
+    heading="Cerita tidak ditemukan"
+    paragraph="Cerita belum tersedia, silahkan cek kembali dalam waktu dekat."
+    v-else-if="!isLoading && !story"
+  />
+  <main v-else class="p-6">
     <section
       class="w-full md:w-[600px] flex flex-col gap-4 mx-auto md:px-8 pb-8"
     >
+      <Back />
       <h2 class="text-2xl font-semibold">{{ story.title }}</h2>
       <div class="flex gap-4">
-        <span>Copyright: {{ story.copyright }}</span>
+        <span>Level: {{ story.level }}</span>
         <span>Author: {{ story.author }}</span>
       </div>
       <p class="text-[#747474] text-justify">{{ story.excerpt }}</p>
       <img :src="story.thumbnail" alt="img" class="h-[220px] md:h-[320px]" />
-      <p class="text-justify whitespace-pre-line">{{ story.content }}</p>
-      <div class="flex gap-4 justify-center">
-        <button
-          @click="
-            isPaused
-              ? resumeSpeaking()
-              : !isPaused && isSpeaking
-              ? pauseSpeaking()
-              : startSpeaking()
-          "
-          class="p-2 bg-[#EFEFEF] rounded-full shadow-none transition-shadow duration-300 cursor-pointer hover:shadow-lg hover:shadow-gray-400"
-        >
-          <AiOutlinePlayCircle v-if="!isSpeaking || isPaused" />
-          <AiOutlinePauseCircle v-else />
-        </button>
-        <button
-          @click="stopSpeaking"
-          class="p-2 bg-[#EFEFEF] rounded-full shadow-none transition-shadow duration-300 cursor-pointer hover:shadow-lg hover:shadow-gray-400"
-        >
-          <IoStopCircleOutline />
-        </button>
+      <div
+        class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm flex items-center justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <span class="font-semibold text-gray-700">Dengarkan Cerita:</span>
+        </div>
+        <div class="flex gap-3">
+          <button
+            @click="
+              isPaused
+                ? resumeSpeaking()
+                : !isPaused && isSpeaking
+                ? pauseSpeaking()
+                : startSpeaking()
+            "
+            class="flex items-center gap-2 bg-[#4F46E5] hover:bg-indigo-700 text-white px-5 py-2.5 rounded-full font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <BiPlay v-if="!isSpeaking" />
+            <FaPauseCircle v-else />
+            {{ !isSpeaking ? "Play" : "Pause" }}
+          </button>
+          <button
+            @click="stopSpeaking"
+            :disabled="!isSpeaking && !isPaused"
+            class="flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-5 py-2.5 rounded-full font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="#ff3603"
+              class="w-5 h-5"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.5 7.5a3 3 0 013-3h9a3 3 0 013 3v9a3 3 0 01-3 3h-9a3 3 0 01-3-3v-9z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            Stop
+          </button>
+        </div>
       </div>
+      <p class="text-justify whitespace-pre-line">{{ story.content }}</p>
     </section>
     <hr class="w-full md:w-[536px] mx-auto" />
     <section

@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watch } from "vue";
 import { RouterLink } from "vue-router";
-import { GiOpenBook } from "vue-icons-plus/gi";
 
 import api from "../lib/publicAxios.js";
 

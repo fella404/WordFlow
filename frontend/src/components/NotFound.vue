@@ -1,4 +1,8 @@
-<script setup></script>
+<script setup>
+import { defineProps } from "vue";
+
+const props = defineProps(["heading", "paragraph"]);
+</script>
 
 <template>
   <div class="w-full flex items-center flex-wrap justify-center gap-10 mt-8">
@@ -84,12 +88,12 @@
         <h2
           class="text-center text-black text-xl font-semibold leading-loose pb-2"
         >
-          Cerita tidak ditemukan
+          {{ props.heading }}
         </h2>
         <p
           class="text-center text-black text-base font-normal leading-relaxed pb-4"
         >
-          Cerita belum tersedia sekarang, mohon cek lagi kedepannya.
+          {{ props.paragraph }}
         </p>
       </div>
     </div>
