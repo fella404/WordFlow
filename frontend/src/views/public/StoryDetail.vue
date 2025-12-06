@@ -155,7 +155,7 @@ onMounted(() => {
       <p class="text-[#747474] text-justify">{{ story.excerpt }}</p>
       <img :src="story.thumbnail" alt="img" class="h-[220px] md:h-[320px]" />
       <div
-        class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm flex items-center justify-between"
+        class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm flex flex-col sm:flex-row items-center gap-2 sm:gap-0 justify-between"
       >
         <div class="flex items-center gap-3">
           <span class="font-semibold text-gray-700">Dengarkan Cerita:</span>

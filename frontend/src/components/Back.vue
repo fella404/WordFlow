@@ -1,21 +1,14 @@
 <script setup>
-import { useRouter } from "vue-router";
-
+import { RouterLink } from "vue-router";
 import { BiArrowBack } from "vue-icons-plus/bi";
-
-const router = useRouter();
-
-const goBack = () => {
-  router.back();
-};
 </script>
 
 <template>
-  <button
-    @click="goBack"
-    class="flex gap-2 items-center text-[#4F46E5] hover:text-indigo-800 font-semibold transition"
+  <router-link
+    to="/"
+    class="inline-flex items-center gap-2 text-[#4F46E5] hover:text-indigo-800 font-semibold transition"
   >
     <BiArrowBack />
     Kembali ke daftar
-  </button>
+  </router-link>
 </template>

@@ -3,7 +3,7 @@ import { ref, reactive } from "vue";
 import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 
-import adminApi from "../lib/adminAxios";
+import adminApi from "../lib/adminAxios.js";
 
 const router = useRouter();
 const toast = useToast();
@@ -24,7 +24,7 @@ Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapi
   thumbnail:
     "https://i.pinimg.com/1200x/2d/63/8e/2d638eb6e4d62e47c9a991d23ef22c0f.jpg",
   copyright: "original",
-  author: "John Doe",
+  author: "AI Generated",
   level: "Beginner",
   vocabs: [
     { word: "", meaning: "", example: [""] },
@@ -61,7 +61,6 @@ const createStory = async () => {
       excerpt: formData.value.excerpt,
       content: formData.value.content,
       thumbnail: formData.value.thumbnail,
-      copyright: formData.value.copyright,
       author: formData.value.author,
       level: formData.value.level,
       vocabs: [
@@ -173,16 +172,6 @@ const createStory = async () => {
         id="file_input"
         class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
         placeholder="image (link only)"
-      />
-    </fieldset>
-    <fieldset>
-      <label for="copyright" class="block mb-1 font-medium">Copyright</label>
-      <input
-        v-model="formData.copyright"
-        type="text"
-        id="copyright"
-        class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
-        placeholder="copyright [original, adapted, public_domain, ai generated]"
       />
     </fieldset>
     <fieldset class="border p-4 flex flex-col gap-6">

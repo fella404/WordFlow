@@ -15,9 +15,8 @@ const formData = ref({
   excerpt: "",
   content: "",
   thumbnail: "",
-  copyright: "",
   author: "",
-  level: "Beginner",
+  level: "",
   vocabs: [
     { word: "", meaning: "", example: [""] },
     { word: "", meaning: "", example: [""] },
@@ -32,7 +31,6 @@ const getStory = async () => {
     formData.value.excerpt = res.data.excerpt;
     formData.value.content = res.data.content;
     formData.value.thumbnail = res.data.thumbnail;
-    formData.value.copyright = res.data.copyright;
     formData.value.author = res.data.author;
     formData.value.level = res.data.level;
     formData.value.vocabs = res.data.vocabs;
@@ -86,7 +84,6 @@ const editStory = async () => {
       excerpt: formData.value.excerpt,
       content: formData.value.content,
       thumbnail: formData.value.thumbnail,
-      copyright: formData.value.copyright,
       author: formData.value.author,
       level: formData.value.level,
       vocabs: [
@@ -130,7 +127,6 @@ const editStory = async () => {
     });
     router.push("/admin/");
   } catch (error) {
-    console.log(error);
     toast.error("Internal server error", {
       position: "top-center",
       timeout: 5000,
@@ -201,16 +197,6 @@ getStory();
         id="file_input"
         class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
         placeholder="image (link only)"
-      />
-    </div>
-    <div>
-      <label for="copyright" class="block mb-1 font-medium">Copyright</label>
-      <input
-        v-model="formData.copyright"
-        type="text"
-        id="copyright"
-        class="border rounded-sm block w-full p-2.5 placeholder:text-gray-600"
-        placeholder="copyright [original, adapted, public_domain, ai generated]"
       />
     </div>
     <div>

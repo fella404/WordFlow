@@ -7,17 +7,7 @@ const storySchema = new mongoose.Schema(
     content: { type: String, required: true },
     excerpt: { type: String, maxLength: 300, required: true },
     thumbnail: { type: String },
-    copyright: {
-      type: String,
-      enum: ["original", "adapted", "public_domain", "ai generated"],
-      default: "original",
-    },
-    source: {
-      type: String,
-    },
-    author: {
-      type: String,
-    },
+    author: { type: String },
     vocabs: [
       {
         word: { type: String, required: true },
