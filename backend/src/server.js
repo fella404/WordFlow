@@ -17,8 +17,8 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? "wordflow-production.up.railway.app"
-        : "http://localhost:5173",
+        ? process.env.PROD_CLIENT_URL
+        : process.env.DEV_CLIENT_URL,
   })
 );
 app.use(express.json());

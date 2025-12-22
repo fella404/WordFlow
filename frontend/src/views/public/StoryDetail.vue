@@ -209,7 +209,7 @@ onMounted(() => {
       >
         <h3 class="font-semibold">{{ vocab.word }}</h3>
         <p class="text-justify">Meaning: {{ vocab.meaning }}</p>
-        <p>Example:</p>
+        <p>Examples:</p>
         <ol>
           <li
             v-for="(example, index) in vocab.example"
