@@ -17,9 +17,9 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? process.env.PROD_CLIENT_URL
-        : process.env.DEV_CLIENT_URL,
-  })
+        ? process.env.CLIENT_URL
+        : "http://localhost:5173",
+  }),
 );
 app.use(express.json());
 
