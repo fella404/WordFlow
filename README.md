@@ -80,8 +80,7 @@ JWT_REFRESH_TOKEN_SECRET=your-secret-refreshToken
 NODE_ENV=development
 
 # CLIENT_URL 
-DEV_CLIENT_URL=http://localhost:5173 # development frontend url
-PROD_CLIENT_URL=https://your-production-url.com # production frontend url
+CLIENT_URL=http://localhost:5173 # development frontend url
 ```
 
 ### 3. Setup Frontend (Client)
