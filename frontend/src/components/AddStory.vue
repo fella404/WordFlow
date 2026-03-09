@@ -1,12 +1,12 @@
 <script setup>
-import { ref, reactive } from "vue";
-import { useToast } from "vue-toastification";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 
-import adminApi from "../lib/adminAxios.js";
+import { useStoryStore } from "../stores/storyStore.js";
 
+const storyStore = useStoryStore();
 const router = useRouter();
-const toast = useToast();
+
 const examplesInput = reactive(["", "", ""]);
 const formData = ref({
   title: "Test title",
@@ -33,98 +33,19 @@ Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapi
   ],
 });
 
-const createStory = async () => {
-  if (
-    !formData.value.title ||
-    !formData.value.excerpt ||
-    !formData.value.content
-  ) {
-    toast.error("All fields are required!", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-    return;
-  }
+const handleSubmit = async () => {
   try {
-    const res = await adminApi.post("/stories", {
-      title: formData.value.title,
-      excerpt: formData.value.excerpt,
-      content: formData.value.content,
-      thumbnail: formData.value.thumbnail,
-      author: formData.value.author,
-      level: formData.value.level,
-      vocabs: [
-        {
-          word: formData.value.vocabs[0].word,
-          meaning: formData.value.vocabs[0].meaning,
-          example: examplesInput[0]
-            ? examplesInput[0].split(";").map((ex) => ex.trim())
-            : [],
-        },
-        {
-          word: formData.value.vocabs[1].word,
-          meaning: formData.value.vocabs[1].meaning,
-          example: examplesInput[1]
-            ? examplesInput[1].split(";").map((ex) => ex.trim())
-            : [],
-        },
-        {
-          word: formData.value.vocabs[2].word,
-          meaning: formData.value.vocabs[2].meaning,
-          example: examplesInput[2]
-            ? examplesInput[2].split(";").map((ex) => ex.trim())
-            : [],
-        },
-      ],
-    });
-
-    toast("Success create story", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
+    await storyStore.createStory(formData.value, examplesInput);
     router.push("/admin/");
   } catch (error) {
-    toast.error("All field required", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
+    console.log("Error while creating a story");
   }
 };
 </script>
 
 <template>
   <form
-    @submit.prevent="createStory"
+    @submit.prevent="handleSubmit"
     class="w-[900px] flex flex-col gap-4 border mx-auto p-8"
   >
     <fieldset>

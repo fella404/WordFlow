@@ -1,13 +1,12 @@
 <script setup>
 import { ref, reactive, defineProps } from "vue";
-import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
 
-import adminApi from "../lib/adminAxios.js";
+import { useStoryStore } from "../stores/storyStore.js";
 
+const storyStore = useStoryStore();
 const props = defineProps(["storyId"]);
 const router = useRouter();
-const toast = useToast();
 
 const examplesInput = reactive(["", "", ""]);
 const formData = ref({
@@ -24,132 +23,21 @@ const formData = ref({
   ],
 });
 
-const getStory = async () => {
+const handleSubmit = async () => {
   try {
-    const res = await adminApi.get(`/stories/${props.storyId}`);
-    formData.value.title = res.data.title;
-    formData.value.excerpt = res.data.excerpt;
-    formData.value.content = res.data.content;
-    formData.value.thumbnail = res.data.thumbnail;
-    formData.value.author = res.data.author;
-    formData.value.level = res.data.level;
-    formData.value.vocabs = res.data.vocabs;
-    examplesInput[0] = res.data.vocabs[0].example.join(";");
-    examplesInput[1] = res.data.vocabs[1].example.join(";");
-    examplesInput[2] = res.data.vocabs[2].example.join(";");
-  } catch (error) {
-    toast.error("Internal server error", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-  }
-};
-
-const editStory = async () => {
-  if (
-    !formData.value.title ||
-    !formData.value.excerpt ||
-    !formData.value.content
-  ) {
-    toast.error("All fields are required!", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-    return;
-  }
-
-  try {
-    const res = await adminApi.put(`/stories/${props.storyId}`, {
-      title: formData.value.title,
-      excerpt: formData.value.excerpt,
-      content: formData.value.content,
-      thumbnail: formData.value.thumbnail,
-      author: formData.value.author,
-      level: formData.value.level,
-      vocabs: [
-        {
-          word: formData.value.vocabs[0].word,
-          meaning: formData.value.vocabs[0].meaning,
-          example: examplesInput[0]
-            ? examplesInput[0].split(";").map((ex) => ex.trim())
-            : [],
-        },
-        {
-          word: formData.value.vocabs[1].word,
-          meaning: formData.value.vocabs[1].meaning,
-          example: examplesInput[1]
-            ? examplesInput[1].split(";").map((ex) => ex.trim())
-            : [],
-        },
-        {
-          word: formData.value.vocabs[2].word,
-          meaning: formData.value.vocabs[2].meaning,
-          example: examplesInput[2]
-            ? examplesInput[2].split(";").map((ex) => ex.trim())
-            : [],
-        },
-      ],
-    });
-
-    toast.success("Success edit story", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
+    await storyStore.editStory(formData.value, examplesInput, props.storyId);
     router.push("/admin/");
   } catch (error) {
-    toast.error("Internal server error", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
+    console.log("Error while editing the story");
   }
 };
 
-getStory();
+storyStore.getStoryById(formData.value, examplesInput, props.storyId);
 </script>
 
 <template>
   <form
-    @submit.prevent="editStory"
+    @submit.prevent="handleSubmit"
     class="w-[900px] flex flex-col gap-4 border mx-auto p-8"
   >
     <div>

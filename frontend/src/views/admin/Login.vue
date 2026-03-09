@@ -1,11 +1,10 @@
 <script setup>
 import { ref } from "vue";
-import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
-import adminApi from "../../lib/adminAxios.js";
+import { useAuthStore } from "../../stores/authStore.js";
 
-const toast = useToast();
 const router = useRouter();
+const authStore = useAuthStore();
 
 const formData = ref({
   email: "",
@@ -13,100 +12,11 @@ const formData = ref({
 });
 
 const handleLogin = async () => {
-  if (!formData.value.email || !formData.value.password) {
-    toast.error("All fields are required!", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-    return;
-  }
-
   try {
-    const res = await adminApi.post("/login", {
-      email: formData.value.email,
-      password: formData.value.password,
-    });
-
-    localStorage.setItem("accessToken", res.data.accessToken);
-    localStorage.setItem("refreshToken", res.data.refreshToken);
-    localStorage.setItem("user", JSON.stringify(res.data.username));
-
-    toast.success("Login successful!", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
+    await authStore.login(formData.value.email, formData.value.password);
     router.push("/admin/");
   } catch (error) {
-    if (error.response?.status === 400) {
-      toast.error("All fields are required!", {
-        position: "top-center",
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-      });
-      return;
-    } else if (error.response?.status === 404) {
-      toast.error("User not found", {
-        position: "top-center",
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-      });
-      formData.value.email = "";
-      formData.value.password = "";
-      return;
-    }
-
-    toast.error("Internal server error", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
+    console.log("Failed to login");
   }
 };
 </script>
@@ -122,7 +32,7 @@ const handleLogin = async () => {
       <input
         type="email"
         v-model="formData.email"
-        class="rounded-2xl w-full py-2 px-4 border-1 border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
+        class="rounded-2xl w-full py-2 px-4 border border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
         id="email"
         placeholder="email"
         name="email"
@@ -130,7 +40,7 @@ const handleLogin = async () => {
       <input
         type="password"
         v-model="formData.password"
-        class="rounded-2xl w-full py-2 px-4 border-1 border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
+        class="rounded-2xl w-full py-2 px-4 border border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
         id="password"
         placeholder="password"
         name="password"

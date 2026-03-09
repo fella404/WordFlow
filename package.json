@@ -2,10 +2,10 @@
   "name": "wordflow",
   "version": "1.0.0",
   "description": "",
-  "main": "backend/src/server.js",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node backend/src/server.js",
-    "dev": "nodemon backend/src/server.js",
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js",
     "build": "npm install && npm install --prefix frontend && npm run build --prefix frontend"
   },
   "repository": {
@@ -22,6 +22,7 @@
   "homepage": "https://github.com/fella404/WordFlow#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",

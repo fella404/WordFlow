@@ -13,12 +13,11 @@ watch(
       currentPage.value = newPage;
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const onClickHandler = (page) => {
   if (page) {
-    console.log(page);
     router.push({ query: { page } });
   }
 };

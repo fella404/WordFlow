@@ -1,159 +1,49 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
-import { useToast } from "vue-toastification";
+import { onMounted } from "vue";
 import { BiPlay } from "vue-icons-plus/bi";
 import { FaPauseCircle } from "vue-icons-plus/fa";
 
-import publicApi from "../../lib/publicAxios.js";
 import Navbar from "../../components/Navbar.vue";
 import NotFound from "../../components/NotFound.vue";
 import LoadingState from "../../components/LoadingState.vue";
 import Back from "../../components/Back.vue";
 
-const toast = useToast();
-const route = useRoute();
-const story = ref(null);
-const isSpeaking = ref(false);
-const isPaused = ref(false);
-const isLoading = ref(false);
+import { useStoryStore } from "../../stores/storyStore.js";
+import { useTTSStore } from "../../stores/TTSStore.js";
 
-const fetchStory = async () => {
-  try {
-    isLoading.value = true;
-    const res = await publicApi.get(`/stories/${route.params.id}`);
-    story.value = res.data;
-  } catch (error) {
-    console.log("Error fetching notes: ", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const startSpeaking = () => {
-  if (!("speechSynthesis" in window)) {
-    toast.error("Your browser does not support text-to-speech", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-    return;
-  }
-
-  if (!story.value.content.trim()) {
-    toast.error("Content is empty", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-  }
-
-  const utterance = new SpeechSynthesisUtterance(story.value.content);
-  utterance.lang = "en-US";
-  utterance.pitch = 0.8;
-  utterance.rate = 0.8;
-
-  utterance.onstart = () => {
-    isSpeaking.value = true;
-    isPaused.value = false;
-  };
-
-  utterance.onend = () => {
-    isSpeaking.value = false;
-    isPaused.value = false;
-  };
-
-  utterance.onerror = (event) => {
-    isSpeaking.value = false;
-    isPaused.value = false;
-    if (event.error === "interrupted") return;
-    toast.error("Internal server error", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-  };
-
-  window.speechSynthesis.speak(utterance);
-};
-
-const pauseSpeaking = () => {
-  if ("speechSynthesis" in window && isSpeaking.value && !isPaused.value) {
-    window.speechSynthesis.pause();
-    isPaused.value = true;
-    isSpeaking.value = false;
-  }
-};
-
-const resumeSpeaking = () => {
-  if ("speechSynthesis" in window && isPaused.value) {
-    window.speechSynthesis.resume();
-    isPaused.value = false;
-    isSpeaking.value = true;
-  }
-};
-
-const stopSpeaking = () => {
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-    isSpeaking.value = false;
-    isPaused.value = false;
-  }
-};
+const storyStore = useStoryStore();
+const ttsStore = useTTSStore();
 
 onMounted(() => {
-  fetchStory();
-  stopSpeaking();
+  storyStore.getPublishedStoryById();
+  ttsStore.stopSpeaking();
 });
 </script>
 
 <template>
   <Navbar />
-  <LoadingState v-if="isLoading" />
+  <LoadingState v-if="storyStore.isLoading" />
   <NotFound
     heading="Cerita tidak ditemukan"
     paragraph="Cerita belum tersedia, silahkan cek kembali dalam waktu dekat."
-    v-else-if="!isLoading && !story"
+    v-else-if="!storyStore.isLoading && !storyStore.story"
   />
   <main v-else class="p-6">
     <section
       class="w-full md:w-[600px] flex flex-col gap-4 mx-auto md:px-8 pb-8"
     >
-      <Back />
-      <h2 class="text-2xl font-semibold">{{ story.title }}</h2>
+      <Back route="/" />
+      <h2 class="text-2xl font-semibold">{{ storyStore.story.title }}</h2>
       <div class="flex gap-4">
-        <span>Level: {{ story.level }}</span>
-        <span>Author: {{ story.author }}</span>
+        <span>Level: {{ storyStore.story.level }}</span>
+        <span>Author: {{ storyStore.story.author }}</span>
       </div>
-      <p class="text-[#747474] text-justify">{{ story.excerpt }}</p>
-      <img :src="story.thumbnail" alt="img" class="h-[220px] md:h-[320px]" />
+      <p class="text-[#747474] text-justify">{{ storyStore.story.excerpt }}</p>
+      <img
+        :src="storyStore.story.thumbnail"
+        alt="img"
+        class="h-[220px] md:h-80"
+      />
       <div
         class="bg-white border border-gray-200 p-4 rounded-xl shadow-sm flex flex-col sm:flex-row items-center gap-2 sm:gap-0 justify-between"
       >
@@ -163,21 +53,22 @@ onMounted(() => {
         <div class="flex gap-3">
           <button
             @click="
-              isPaused
-                ? resumeSpeaking()
-                : !isPaused && isSpeaking
-                ? pauseSpeaking()
-                : startSpeaking()
+              ttsStore.isPaused
+                ? ttsStore.resumeSpeaking()
+                : !ttsStore.isPaused && ttsStore.isSpeaking
+                  ? ttsStore.pauseSpeaking()
+                  : ttsStore.startSpeaking(storyStore.story)
             "
+            :disabled="ttsStore.isLoading"
             class="flex items-center gap-2 bg-[#4F46E5] hover:bg-indigo-700 text-white px-5 py-2.5 rounded-full font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <BiPlay v-if="!isSpeaking" />
+            <BiPlay v-if="!ttsStore.isSpeaking" />
             <FaPauseCircle v-else />
-            {{ !isSpeaking ? "Play" : "Pause" }}
+            {{ !ttsStore.isSpeaking ? "Play" : "Pause" }}
           </button>
           <button
-            @click="stopSpeaking"
-            :disabled="!isSpeaking && !isPaused"
+            @click="ttsStore.stopSpeaking"
+            :disabled="!ttsStore.isSpeaking && !ttsStore.isPaused"
             class="flex items-center gap-2 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 px-5 py-2.5 rounded-full font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg
@@ -196,7 +87,9 @@ onMounted(() => {
           </button>
         </div>
       </div>
-      <p class="text-justify whitespace-pre-line">{{ story.content }}</p>
+      <p class="text-justify whitespace-pre-line">
+        {{ storyStore.story.content }}
+      </p>
     </section>
     <hr class="w-full md:w-[536px] mx-auto" />
     <section
@@ -204,7 +97,7 @@ onMounted(() => {
     >
       <h2 class="text-2xl font-semibold">Key Vocabulary</h2>
       <div
-        v-for="vocab in story.vocabs"
+        v-for="vocab in storyStore.story.vocabs"
         class="border flex flex-col gap-2 bg-[#EDEDED] p-4"
       >
         <h3 class="font-semibold">{{ vocab.word }}</h3>

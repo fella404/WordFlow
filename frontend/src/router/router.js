@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import publicRoutes from "./publicRoutes.js";
 import adminRoutes from "./adminRoutes.js";
+import { useAuthStore } from "../stores/authStore.js";
 
 // Gabungkan semua route
 const routes = [...publicRoutes, ...adminRoutes];
@@ -11,17 +12,22 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _, next) => {
-  const isAuthenticated = !!localStorage.getItem("accessToken");
+let isAuthInitialized = false;
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    // Redirect ke login jika mencoba akses protected route tanpa token
+router.beforeEach(async (to, _, next) => {
+  const authStore = useAuthStore();
+
+  if (!isAuthInitialized) {
+    await authStore.fetchUser();
+    isAuthInitialized = true;
+  }
+
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const requiresGuest = to.matched.some((record) => record.meta.requiresGuest);
+
+  if (requiresAuth && !authStore.isAuthenticated) {
     next("/admin/login");
-  } else if (
-    (to.name === "Login" || to.name === "Register") &&
-    isAuthenticated
-  ) {
-    // Redirect ke dashboard jika sudah login tapi mencoba akses login/register
+  } else if (requiresGuest && authStore.isAuthenticated) {
     next("/admin/");
   } else {
     next();

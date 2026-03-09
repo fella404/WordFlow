@@ -1,11 +1,10 @@
 <script setup>
 import { ref } from "vue";
-import { useToast } from "vue-toastification";
 import { useRouter } from "vue-router";
-import api from "../../lib/adminAxios";
+import { useAuthStore } from "../../stores/authStore.js";
 
-const toast = useToast();
 const router = useRouter();
+const authStore = useAuthStore();
 
 const formData = ref({
   name: "",
@@ -15,101 +14,15 @@ const formData = ref({
 
 const handleRegister = async () => {
   try {
-    if (
-      !formData.value.name ||
-      !formData.value.email ||
-      !formData.value.password
-    ) {
-      toast.error("All fields are required!", {
-        position: "top-center",
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-      });
-      return;
-    }
+    await authStore.register(
+      formData.value.name,
+      formData.value.email,
+      formData.value.password,
+    );
 
-    const res = await api.post("/register", {
-      name: formData.value.name,
-      email: formData.value.email,
-      password: formData.value.password,
-    });
-
-    toast.success("Registration successful!", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-
-    router.push("/admin/login");
+    router.push("/admin/");
   } catch (error) {
-    if (error.status === 400) {
-      toast.error("Password must be at least 8 characters!", {
-        position: "top-center",
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-      });
-      return;
-    }
-    if (error.status === 409) {
-      toast.error("Email already exist!", {
-        position: "top-center",
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-      });
-      formData.value.email = "";
-      return;
-    }
-
-    toast.error("Internal server error", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
+    console.log("Failed to registration");
   }
 };
 </script>
@@ -125,7 +38,7 @@ const handleRegister = async () => {
       <input
         type="text"
         v-model="formData.name"
-        class="rounded-2xl w-full py-2 px-4 border-1 border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
+        class="rounded-2xl w-full py-2 px-4 border border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
         id="name"
         placeholder="name"
         name="name"
@@ -133,7 +46,7 @@ const handleRegister = async () => {
       <input
         type="email"
         v-model="formData.email"
-        class="rounded-2xl w-full py-2 px-4 border-1 border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
+        class="rounded-2xl w-full py-2 px-4 border border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
         id="email"
         placeholder="email"
         name="email"
@@ -141,7 +54,7 @@ const handleRegister = async () => {
       <input
         type="password"
         v-model="formData.password"
-        class="rounded-2xl w-full py-2 px-4 border-1 border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
+        class="rounded-2xl w-full py-2 px-4 border border-gray-500 placeholder:text-gray-400 placeholder:font-extrabold placeholder:text-sm"
         id="password"
         placeholder="password"
         name="password"

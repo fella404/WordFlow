@@ -1,125 +1,19 @@
 <script setup>
-import { ref, watch } from "vue";
+import { watch } from "vue";
 import { useRoute } from "vue-router";
-import { useToast } from "vue-toastification";
 
 import Pagination from "../../components/Pagination.vue";
-
-import adminApi from "../../lib/adminAxios.js";
 import NotFound from "../../components/NotFound.vue";
 
-const toast = useToast();
+import { useStoryStore } from "../../stores/storyStore.js";
+
+const storyStore = useStoryStore();
 const route = useRoute();
-const stories = ref([]);
-
-const fetchStories = async (page) => {
-  try {
-    const res = await adminApi.get("/stories", {
-      params: { page },
-    });
-    stories.value = res.data;
-  } catch (error) {
-    toast.error("Internal server error", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-  }
-};
-
-const publishStory = async (story) => {
-  try {
-    const res = await adminApi.put(`/stories/${story._id}`, {
-      published: !story.published,
-    });
-    story.published = res.data.published;
-  } catch (error) {
-    if (error.status === 404) {
-      toast.error("Story not found", {
-        position: "top-center",
-        timeout: 5000,
-        closeOnClick: true,
-        pauseOnFocusLoss: true,
-        pauseOnHover: true,
-        draggable: true,
-        draggablePercent: 0.6,
-        showCloseButtonOnHover: false,
-        hideProgressBar: true,
-        closeButton: "button",
-        icon: true,
-        rtl: false,
-      });
-      return;
-    }
-
-    toast.error("Internal server error", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-  }
-};
-
-const deleteStory = async (storyId) => {
-  try {
-    const res = await adminApi.delete(`/stories/${storyId}`);
-    stories.value.docs = stories.value.docs.filter(
-      (story) => story._id !== storyId
-    );
-    toast.success("Story deleted successfully", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-  } catch (error) {
-    toast.error("Internal server error", {
-      position: "top-center",
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: false,
-      hideProgressBar: true,
-      closeButton: "button",
-      icon: true,
-      rtl: false,
-    });
-  }
-};
 
 watch(
   () => route.query.page,
-  (newPage) => fetchStories(newPage),
-  { immediate: true }
+  (newPage) => storyStore.getAllStories(newPage),
+  { immediate: true },
 );
 </script>
 
@@ -139,25 +33,29 @@ watch(
       Add Story
     </router-link>
     <ul
-      v-if="stories && stories.docs && stories.docs.length > 0"
+      v-if="
+        storyStore.stories &&
+        storyStore.stories.docs &&
+        storyStore.stories.docs.length > 0
+      "
       class="w-[650px] border border-b-0"
     >
       <li
-        v-for="story in stories.docs"
+        v-for="story in storyStore.stories.docs"
         :key="story._id"
         class="flex items-center justify-between gap-4 px-4 py-4 border-b"
       >
         <div class="flex items-center gap-4">
           <input
             :checked="story.published"
-            @change="publishStory(story)"
+            @change="storyStore.publishStory(story)"
             type="checkbox"
             class="w-[25px] h-[25px]"
           />
           <div class="flex flex-col">
             <span class="text-sm font-semibold">Title: {{ story.title }}</span>
-            <span class="text-sm">Author: {{ story.author }}</span>
-          </div>
+            <span class="text-sm">Level: {{ story.level }}</span>
+          </div>  
         </div>
 
         <div class="flex gap-2">
@@ -169,7 +67,7 @@ watch(
             Edit
           </router-link>
           <button
-            @click="deleteStory(story._id)"
+            @click="storyStore.deleteStory(story._id)"
             type="button"
             class="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-2xl text-sm px-5 py-2 dark:bg-red-500 dark:hover:bg-red-700 dark:focus:ring-red-900"
           >
@@ -183,7 +81,7 @@ watch(
       paragraph="Tambah cerita sekarang!"
       v-else
     />
-    <Pagination :stories="stories" />
+    <Pagination :stories="storyStore.stories" />
   </main>
 </template>
 

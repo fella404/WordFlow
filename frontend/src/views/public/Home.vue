@@ -1,51 +1,31 @@
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, watch } from "vue";
 import { RouterLink, useRoute } from "vue-router";
-import { IoArrowForwardCircleOutline, IoCalendar } from "vue-icons-plus/io";
+import { IoArrowForwardCircleOutline } from "vue-icons-plus/io";
 
 import Navbar from "../../components/Navbar.vue";
 import Pagination from "../../components/Pagination.vue";
 import NotFound from "../../components/NotFound.vue";
 import LoadingState from "../../components/LoadingState.vue";
-import Back from "../../components/Back.vue";
 
-import publicApi from "../../lib/publicAxios.js";
+import { useStoryStore } from "../../stores/storyStore.js";
+import { useTTSStore } from "../../stores/TTSStore.js";
 
 const route = useRoute();
-const stories = ref([]);
-const isLoading = ref(false);
-
-const fetchStories = async (page) => {
-  try {
-    isLoading.value = true;
-    const res = await publicApi.get("/stories", {
-      params: { page },
-    });
-    stories.value = res.data;
-  } catch (error) {
-    console.log("Error fetching notes: ", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const stopSpeaking = () => {
-  if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-  }
-};
+const storyStore = useStoryStore();
+const ttsStore = useTTSStore();
 
 watch(
   () => route.query.page,
   (newPageValue) => {
     const page = Number(newPageValue) || 1;
-    fetchStories(page);
+    storyStore.getPublishedStories(page);
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 onMounted(() => {
-  stopSpeaking();
+  ttsStore.stopSpeaking();
 });
 </script>
 
@@ -63,20 +43,23 @@ onMounted(() => {
     </p>
   </div>
 
-  <LoadingState v-if="isLoading" />
+  <LoadingState v-if="storyStore.isLoading" />
 
   <NotFound
     heading="Cerita tidak ditemukan"
     paragraph="Cerita belum tersedia, silahkan cek kembali dalam waktu dekat."
-    v-else-if="!isLoading && (!stories.docs || stories.docs.length === 0)"
+    v-else-if="
+      !storyStore.isLoading &&
+      (!storyStore.stories.docs || storyStore.stories.docs.length === 0)
+    "
   />
 
   <main
     v-else
-    class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-between place-content-center gap-8 pb-8"
+    class="grid grid-cols-[repeat(1,minmax(0,350px))] md:grid-cols-[repeat(2,minmax(0,330px))] lg:grid-cols-[repeat(3,minmax(0,300px))] xl:grid-cols-[repeat(3,minmax(0,350px))] place-content-center gap-8 pb-8"
   >
     <div
-      v-for="story in stories.docs"
+      v-for="story in storyStore.stories.docs"
       :key="story._id"
       class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300 border border-gray-100 group flex flex-col"
     >
@@ -113,5 +96,5 @@ onMounted(() => {
       </div>
     </div>
   </main>
-  <Pagination :stories="stories" />
+  <Pagination :stories="storyStore.stories" />
 </template>

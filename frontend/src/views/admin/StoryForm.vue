@@ -16,7 +16,7 @@ const route = useRoute();
     >
       WordFlow
     </router-link>
-    <Back />
+    <Back route="/admin/" />
     <AddStory v-if="!route.params.id" />
     <EditStory v-else :storyId="route.params.id" />
   </div>

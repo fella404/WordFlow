@@ -1,43 +1,14 @@
 <script setup>
 import { ref, watch } from "vue";
 import { RouterLink } from "vue-router";
+import { useSearchStore } from "../stores/searchStore.js";
 
-import api from "../lib/publicAxios.js";
-
+const searchStore = useSearchStore();
 const searchQuery = ref("");
-const searchResults = ref([]);
-const isLoading = ref(false);
-let timeoutId = null;
-
-const debouncedSearch = (query) => {
-  isLoading.value = true;
-  clearTimeout(timeoutId);
-  timeoutId = setTimeout(async () => {
-    if (query.trim()) {
-      await performSearch(query);
-    } else {
-      searchResults.value = [];
-    }
-  }, 1500);
-};
-
-const performSearch = async (query) => {
-  try {
-    const res = await api.get(`/search?=${encodeURIComponent(query)}`, {
-      params: { search: query },
-    });
-    searchResults.value = res.data;
-  } catch (error) {
-    console.log("Error performing search: ", error);
-    searchResults.value = [];
-  } finally {
-    isLoading.value = false;
-  }
-};
 
 watch(searchQuery, (newQuery) => {
-  debouncedSearch(newQuery);
-  searchResults.value = [];
+  searchStore.debouncedSearch(newQuery);
+  searchStore.searchResults.value = [];
 });
 </script>
 
@@ -59,19 +30,21 @@ watch(searchQuery, (newQuery) => {
       />
       <div v-if="searchQuery && searchQuery.trim()">
         <div
-          v-if="isLoading"
+          v-if="searchStore.isLoading"
           class="border border-gray-700 rounded-lg p-2 mt-1 text-sm"
         >
           Searching...
         </div>
         <ul
-          v-if="searchResults && searchResults.length > 0"
+          v-if="
+            searchStore.searchResults && searchStore.searchResults.length > 0
+          "
           class="border border-gray-700 rounded-lg py-2 mt-1"
         >
           <li>
             <router-link
               :to="`/story/${story._id}`"
-              v-for="story in searchResults"
+              v-for="story in searchStore.searchResults"
               :key="story._id"
             >
               <li
@@ -83,7 +56,11 @@ watch(searchQuery, (newQuery) => {
           </li>
         </ul>
         <div
-          v-if="!isLoading && searchResults && !searchResults.length"
+          v-if="
+            !searchStore.isLoading &&
+            searchStore.searchResults &&
+            !searchStore.searchResults.length
+          "
           class="border border-gray-700 rounded-lg p-2 mt-1 text-sm"
         >
           No story found

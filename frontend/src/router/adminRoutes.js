@@ -8,29 +8,31 @@ const adminRoute = [
     path: "/admin/",
     name: "Dashboard",
     component: Dashboard,
-    meta: { requiresAuth: true }, // ✅ Protected route
+    meta: { requiresAuth: true },
   },
   {
     path: "/admin/register",
     name: "Register",
     component: Register,
+    meta: { requiresGuest: true },
   },
   {
     path: "/admin/login",
     name: "Login",
     component: Login,
+    meta: { requiresGuest: true },
   },
   {
-    path: "/admin/story/add", // add story form
+    path: "/admin/story/add",
     name: "Add Story",
     component: StoryForm,
     meta: { requiresAuth: true },
   },
   {
-    path: "/admin/story/edit/:id", // edit story form
+    path: "/admin/story/edit/:id",
     name: "Edit Story",
     component: StoryForm,
-    meta: { requiresAuth: true }, // ✅ Protected route
+    meta: { requiresAuth: true },
   },
 ];
 
