@@ -49,10 +49,13 @@ export const useAuthStore = defineStore("auth", () => {
   const fetchUser = async () => {
     try {
       const res = await api.get("/auth/fetch-user");
+      console.log(res.data);
       user.value = res.data;
       isAuthenticated.value = true;
     } catch (error) {
       console.log(error.response.data.message);
+      isAuthenticated.value = false;
+      user.value = null;
     }
   };
 
