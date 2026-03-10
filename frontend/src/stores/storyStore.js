@@ -59,10 +59,9 @@ export const useStoryStore = defineStore("stories", () => {
     const route = useRoute();
     isLoading.value = true;
     try {
-      const res = await api.get(`/stories/${route.params.id}`);
+      const res = await api.get(`/stories/published/${route.params.id}`);
       story.value = res.data;
     } catch (error) {
-      console.log(error);
       toast.error("Internal server error", { position: "top-center" });
     } finally {
       isLoading.value = false;
